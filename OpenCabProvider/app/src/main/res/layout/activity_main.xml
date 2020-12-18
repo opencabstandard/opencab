@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/login_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:hint="Username"/>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Login"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/logout_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/welcome_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:layout_marginBottom="32dp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duty Status:"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            />
+        <LinearLayout
+            android:id="@+id/status_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RelativeLayout
+                android:id="@+id/status_driving"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/status_inactive"
+                android:layout_margin="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="24sp"
+                    android:text="D"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/status_on"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/status_inactive"
+                android:layout_margin="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="24sp"
+                    android:text="ON"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/status_off"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/status_inactive"
+                android:layout_margin="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="24sp"
+                    android:text="OFF"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="16dp"
+            android:text="Logout"/>
+
+        <Button
+            android:id="@+id/switch_driver_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="16dp"
+            android:text="Switch Driver"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/navigation_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="20sp"/>
+
+</RelativeLayout>

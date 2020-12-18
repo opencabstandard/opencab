@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys a static website for docs.opencabstandard.org.
+Resources:
+  Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+  WebsiteCDN:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: !Sub "CDN for docs.opencabstandard.org"
+        Aliases:
+          - docs.opencabstandard.org
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:571593187444:certificate/389215af-419e-4942-8117-c723da6cf271
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2018
+        Enabled: 'true'
+        IPV6Enabled: true
+        HttpVersion: http2
+        DefaultCacheBehavior:
+          ForwardedValues:
+            QueryString: 'true'
+          TargetOriginId: only-origin
+          Compress: true
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Origins:
+          - CustomOriginConfig:
+              HTTPPort: '80'
+              HTTPSPort: '443'
+              OriginProtocolPolicy: http-only
+            DomainName: !Join
+              - ''
+              - !Split
+                - "http://"
+                - !Sub "${Bucket.WebsiteURL}"
+            Id: only-origin
+  WebsiteDNSName:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: opencabstandard.org.
+      Comment: CNAME redirect custom name to CloudFront distribution
+      Name: docs.opencabstandard.org
+      Type: A
+      AliasTarget:
+        DNSName: !Sub "${WebsiteCDN.DomainName}"
+        HostedZoneId: Z2FDTNDATAQYW2
+  WebsiteDNSNameAAAA:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: opencabstandard.org.
+      Comment: CNAME redirect custom name to CloudFront distribution
+      Name: docs.opencabstandard.org
+      Type: AAAA
+      AliasTarget:
+        DNSName: !Sub "${WebsiteCDN.DomainName}"
+        HostedZoneId: Z2FDTNDATAQYW2
