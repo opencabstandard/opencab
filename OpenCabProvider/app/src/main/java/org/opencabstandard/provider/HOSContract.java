@@ -288,7 +288,7 @@ public final class HOSContract {
             STRING("string"),
 
             /**
-             *  The value field will contain a date in
+             *  Indicates that the value field will contain a date in
              *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
              *  format.  The date will appear formatted as "MM/dd/yyyy".  An example for this type of clock
              *  could be the date of next required truck service.
@@ -296,7 +296,7 @@ public final class HOSContract {
             DATE("date"),
 
             /**
-             *  The value field will contain a date in
+             *  Indicates that the value field will contain a date in
              *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
              *  format that will be shown as a clock counting down to zero.  The counter will not go below zero.
              *  An example for this type of clock could be the remaining available drive time.
@@ -304,7 +304,7 @@ public final class HOSContract {
             COUNTUP("countup"),
 
             /**
-             *  The value filed will contain a date in
+             *  Indicates that the value field will contain a date in
              *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
              *  format that will be shown as a clock counting up from the provided date.  An example for this
              *  type of clock could be the number of hours since last rest.
@@ -354,7 +354,9 @@ public final class HOSContract {
         }
 
         /**
-         * Indicates the important clock.
+         * Indicates the important clock. Consumers may interpret this flag in multiple ways,
+         * but one possible use is to determine which clock to display in a compact view
+         * layout that only permits a single clock to be shown.
          *
          * @param important Flag indicating which is the most important clock in the list.
          */
@@ -363,7 +365,9 @@ public final class HOSContract {
         }
 
         /**
-         * Indicates which clock limits the driving range.
+         * Indicates which clock most tightly limits the time a driver can spend driving.
+         * Consumers may interpret this flag in multiple ways, but one possible use is to
+         * indicate where a driver needs to plan to shut down when planning a route.
          *
          * @param limitsDrivingRange Flag indicating which clock limits the driving range.
          */
