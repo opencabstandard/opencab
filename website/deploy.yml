@@ -61,3 +61,41 @@ Resources:
       AliasTarget:
         DNSName: !Sub "${WebsiteCDN.DomainName}"
         HostedZoneId: Z2FDTNDATAQYW2
+
+  WriteWebsiteGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      Path: /websites/
+  WriteWebsitePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups:
+        - !Ref WriteWebsiteGroup
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:GetObjectAcl
+              - s3:GetObjectTagging
+              - s3:GetObjectTorrent
+              - s3:GetObjectVersion
+              - s3:GetObjectVersionAcl
+              - s3:GetObjectVersionForReplication
+              - s3:GetObjectVersionTagging
+              - s3:GetObjectVersionTorrent
+              - s3:GetReplicationConfiguration
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:ListBucketVersions
+              - s3:ListMultipartUploadParts
+              - s3:ListBucketByTags
+              - s3:PutObject
+              - s3:DeleteObject
+              - s3:PutObjectVersionAcl
+              - s3:PutObjectAcl
+            Resource:
+              - !Sub "${Bucket.Arn}/*"
+              - !Sub "${Bucket.Arn}"
+      PolicyName: !Sub "${AWS::StackName}-write-website"
