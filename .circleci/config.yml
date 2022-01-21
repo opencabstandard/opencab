@@ -6,6 +6,18 @@ workflows:
     jobs:
       - build:
           context: aws
+  weekly:
+    triggers:
+      # Keep the wheels greased (keep builds from aging out of Firebase)
+      - schedule:
+          cron: "8 4 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - build:
+          context: aws
 
 orbs:
   android: circleci/android@0.2.1
@@ -19,6 +31,9 @@ jobs:
       - checkout:
           path: ~/code
       - aws-cli/install
+      - run:
+          name: Install Firebase credentials
+          command: echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > ~/gcloud.json
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
@@ -33,7 +48,7 @@ jobs:
           command: ./gradlew assembleDebug
       - run:
           name: Upload build to Firebase
-          command: ./gradlew appDistributionUploadDebug
+          command: GOOGLE_APPLICATION_CREDENTIALS="$HOME"/gcloud.json ./gradlew appDistributionUploadDebug
       - run:
           name: Install lftp command line tool
           command: sudo apt-get update && sudo apt-get install lftp
