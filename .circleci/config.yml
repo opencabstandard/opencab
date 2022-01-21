@@ -10,13 +10,14 @@ workflows:
     triggers:
       # Keep the wheels greased (keep builds from aging out of Firebase)
       - schedule:
-          cron: "8 4 * * MON"
+          cron: "8 4 * * 1"
           filters:
             branches:
               only:
                 - main
     jobs:
-      - build
+      - build:
+          context: aws
 
 orbs:
   android: circleci/android@0.2.1
