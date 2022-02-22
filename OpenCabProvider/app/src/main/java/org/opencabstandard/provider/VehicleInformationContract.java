@@ -1,12 +1,15 @@
 package org.opencabstandard.provider;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
+
 /**
- * Defines the contract for the OpenCab Identity Content provider. An OpenCab Identity provider app should
+ * Defines the contract for the OpenCab Vehicle Information provider. An OpenCab Vehicle Information provider app should
  * define an Android {@link android.content.ContentProvider} class
- * that follows this contract or should subclass the {@link AbstractIdentityProvider} class and
+ * that follows this contract or should subclass the {@link AbstractVehicleInformationProvider} class and
  * implement the abstract methods.
  */
 public final class VehicleInformationContract {
@@ -24,7 +27,7 @@ public final class VehicleInformationContract {
      * This authority is declared in the manifest for the app that acts as the vehicle information provider.
      * It is then used by the consumer app to identify any providers installed on the device.
      */
-    // TODO: can we use dashes in java package names?
+    // TODO: can we use dashes in java package names? No dashes but we can use underscores
     public static final String AUTHORITY = "org.opencabstandard.vehicleinformation";
 
     /**
@@ -34,21 +37,47 @@ public final class VehicleInformationContract {
      */
     public static final String ACTION_DRIVER_LOGOUT = "com.opencabstandard.VEHICLE_INFORMATION_CHANGED";
 
-     /**
-     * 
-     */
     /**
      * Provider method for retrieving the vehicle information.
+     * 
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
      *
-     // TODO: Proper example
+     *     {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *     {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link VehicleInformationContract}.AUTHORITY),
+     *                                  {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION,
+     *                                  {@link VehicleInformationContract}.VERSION,
+     *                                  null);
+     *     {@link VehicleInformationContract}.VehicleInformation vin = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VIN);     
+     * </code>
+     * </pre>
+     *
+     *
      */
     public static final String METHOD_GET_VEHICLE_INFORMATION = "getVehicleInformation";
 
     /**
      * Use this key to retrieve the VIN from the {@link android.os.Bundle} object that is returned
-     * from the {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION method call.
+     * from the {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION method call. If the value is null,
+     * an error occurred and you can then retrieve the error from the {@link android.os.Bundle} using the key
+     * {@link VehicleInformationContract}.KEY_ERROR.
      *
-     * TODO: Example
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *
+     *     {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *     {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link VehicleInformationContract}.AUTHORITY),
+     *                                  {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION,
+     *                                  {@link VehicleInformationContract}.VERSION,
+     *                                  null);
+     *     {@link VehicleInformationContract}.VehicleInformation vin = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VIN);     
+     * </code>
+     * </pre>
+     *
      */
     public static final String KEY_VIN = "vin";
 
@@ -60,6 +89,10 @@ public final class VehicleInformationContract {
      * Example:
      * <pre>
      * <code class="language-java">
+     *     {@link Bundle} result = provider.call(Uri.parse("content://" + {@link VehicleInformationContract}.AUTHORITY),
+     *                                  "ANY METHOD",
+     *                                  {@link VehicleInformationContract}.VERSION,
+     *                                  null);
      *     String error = result.getString({@link VehicleInformationContract}.KEY_ERROR);
      * </code>
      * </pre>
@@ -72,7 +105,7 @@ public final class VehicleInformationContract {
     }
 
     /**
-     * Object containing the login credentials.
+     * Object containing the vehicle information.
      */
     public static class VehicleInformation implements Parcelable {
 
@@ -83,5 +116,49 @@ public final class VehicleInformationContract {
         }
 
         // todos: setters and getters and parcel stuff
-    }
+   
+        /**
+         * A string to identify the vehicle vin number.
+         *
+         * @param vin The vehicle vin in string format
+         */
+        public void setVin(String vin) {
+            this.vin = vin;
+        }
+
+        /**
+         * A string to identify the vehicle vin number.
+         *
+         * @param vin The vehicle vin in string format
+         */
+        public String getVin() {
+            return vin;
+        }
+        
+        protected VehicleInformation(Parcel in) {
+            vin = in.readString();
+        }        
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(vin);
+        }      
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<VehicleInformation> CREATOR = new Creator<VehicleInformation>() {
+            @Override
+            public VehicleInformation createFromParcel(Parcel in) {
+                return new VehicleInformation(in);
+            }
+
+            @Override
+            public VehicleInformation[] newArray(int size) {
+                return new VehicleInformation[size];
+            }
+        };
+    }        
 }
