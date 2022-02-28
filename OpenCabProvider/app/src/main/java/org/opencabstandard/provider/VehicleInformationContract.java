@@ -79,6 +79,10 @@ public final class VehicleInformationContract {
      * </pre>
      *
      */
+    
+    // Should this be KEY_VEHICLE_INFORMATION instead?
+    // Also, the HOS contract had the same code for the METHOD and KEY examples. The Identity contract has different code examples for METHOD get active drivers and KEY active drivers. 
+        // Not sure which template to use. 
     public static final String KEY_VIN = "vin";
 
     /**
@@ -110,13 +114,12 @@ public final class VehicleInformationContract {
     public static class VehicleInformation implements Parcelable {
 
         private String vin;
+        private boolean moving;
 
         public VehicleInformation() {
 
-        }
+        }  
 
-        // todos: setters and getters and parcel stuff
-   
         /**
          * A string to identify the vehicle vin number.
          *
@@ -135,13 +138,32 @@ public final class VehicleInformationContract {
             return vin;
         }
         
+        /**
+         * Is the vehicle currently moving?
+         * @return Boolean indicating whether the vehicle is currently moving.
+         */
+        public boolean isMoving() {
+            return moving;
+        }
+
+        /**
+         * Indicate that the vehicle is currently moving.  If false, the vehicle is not
+         * and does not intend on moving.
+         * @param status Boolean indicating if the vehicle is currently moving.
+         */
+        public void setMoving(boolean status) {
+            moving = status;
+        }        
+
         protected VehicleInformation(Parcel in) {
-            vin = in.readString();
+            this.vin = in.readString();
+            this.moving = (Boolean)in.readValue(Boolean.class.getClassLoader());
         }        
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeString(vin);
+            dest.writeValue(moving);
         }      
 
         @Override
