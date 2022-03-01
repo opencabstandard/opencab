@@ -11,6 +11,26 @@ import android.os.Parcelable;
  * define an Android {@link android.content.ContentProvider} class
  * that follows this contract or should subclass the {@link AbstractVehicleInformationProvider} class and
  * implement the abstract methods.
+ * <div class="mermaid">
+ *     sequenceDiagram
+        participant A as OpenCab Consumer
+        participant B as OpenCab Provider
+        Note over A,B: consumer app launches, no driver logged in
+        A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
+        Note over A,B: driver logs in or connects to a vehicle mount
+        B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+        A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", MOVING: false}}
+        Note over A,B: driver switches to D status or puts vehicle in gear
+        B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+        A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", MOVING: true}}
+        Note over A,B: driver logs out or detaches tablet
+        B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+        A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
+ * </div>
  */
 public final class VehicleInformationContract {
 
@@ -35,7 +55,7 @@ public final class VehicleInformationContract {
      * chooses to associate with another vehicle, or if the device removed from a vehicle in a
      * slip-seat scenario.
      */
-    public static final String ACTION_DRIVER_LOGOUT = "com.opencabstandard.VEHICLE_INFORMATION_CHANGED";
+    public static final String ACTION_VEHICLE_INFORMATION_CHANGED = "com.opencabstandard.VEHICLE_INFORMATION_CHANGED";
 
     /**
      * Provider method for retrieving the vehicle information.
@@ -50,7 +70,7 @@ public final class VehicleInformationContract {
      *                                  {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION,
      *                                  {@link VehicleInformationContract}.VERSION,
      *                                  null);
-     *     {@link VehicleInformationContract}.VehicleInformation vin = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VIN);     
+     *     {@link VehicleInformationContract}.VehicleInformation info = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VEHICLE_INFORMATION);
      * </code>
      * </pre>
      *
@@ -74,16 +94,12 @@ public final class VehicleInformationContract {
      *                                  {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION,
      *                                  {@link VehicleInformationContract}.VERSION,
      *                                  null);
-     *     {@link VehicleInformationContract}.VehicleInformation vin = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VIN);     
+     *     {@link VehicleInformationContract}.VehicleInformation info = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VEHICLE_INFORMATION);
      * </code>
      * </pre>
      *
      */
-    
-    // Should this be KEY_VEHICLE_INFORMATION instead?
-    // Also, the HOS contract had the same code for the METHOD and KEY examples. The Identity contract has different code examples for METHOD get active drivers and KEY active drivers. 
-        // Not sure which template to use. 
-    public static final String KEY_VIN = "vin";
+    public static final String KEY_VEHICLE_INFORMATION = "vehicle_info";
 
     /**
      * If an error has occurred in one of the provider method calls, use this key to retrieve
