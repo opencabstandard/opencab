@@ -7,9 +7,10 @@ import android.os.Parcelable;
 
 
 /**
+ * TODO: Generate AbstractVehicleInformationProvider class and link it here.
  * Defines the contract for the OpenCab Vehicle Information provider. An OpenCab Vehicle Information provider app should
  * define an Android {@link android.content.ContentProvider} class
- * that follows this contract or should subclass the {@link AbstractVehicleInformationProvider} class and
+ * that follows this contract or should subclass the AbstractVehicleInformationProvider class and
  * implement the abstract methods.
  * <div class="mermaid">
  *     sequenceDiagram
