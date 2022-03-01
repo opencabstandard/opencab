@@ -5,7 +5,7 @@ set -ex
 yum install wget unzip java-11-openjdk-devel
 amazon-linux-extras install java-openjdk11
 
-wget -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+wget --quiet -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
 unzip android.zip
 mkdir -p android-sdk/licenses/
 # We accept the license
