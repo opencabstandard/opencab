@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# If using Ubuntu, you need:
 # apt-get install default-jdk-headless wget unzip
 
 set -e
