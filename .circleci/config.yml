@@ -50,9 +50,6 @@ jobs:
           name: Upload build to Firebase
           command: GOOGLE_APPLICATION_CREDENTIALS="$HOME"/gcloud.json ./gradlew appDistributionUploadDebug
       - run:
-          name: Install lftp command line tool
-          command: sudo apt-get update && sudo apt-get install lftp
-      - run:
           name: Build documentation
           command: ./build-docs.sh
       - run:

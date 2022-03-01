@@ -161,7 +161,8 @@ public final class IdentityContract {
         }
 
         /**
-         * A token that can be used to uniquely identify the driver.
+         * An authentication token that can be used to uniquely and securely identify the driver.
+         * For more details about possible types of tokens, see {@link IdentityContract}.
          *
          * @param token The login token
          */
@@ -180,8 +181,9 @@ public final class IdentityContract {
 
         /**
          * A URL that can be used to authenticate the login token.
+         * For more details about how OpenCab interacts with authentication systems, see {@link IdentityContract}.
          *
-         * @param authority The authority url.
+         * @param authority The authority URL.
          */
         public void setAuthority(String authority) {
             this.authority = authority;
@@ -189,6 +191,7 @@ public final class IdentityContract {
 
         /**
          * A token that can be used to uniquely identify the driver.
+         * For more details about possible types of tokens, see {@link IdentityContract}.
          *
          * @return The login token
          */
@@ -207,6 +210,7 @@ public final class IdentityContract {
 
         /**
          * A URL that can be used to authenticate the login token.
+         * For more details about how OpenCab interacts with authentication systems, see {@link IdentityContract}.
          *
          * @return The authority url.
          */
