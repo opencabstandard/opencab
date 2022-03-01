@@ -134,12 +134,12 @@ public final class VehicleInformationContract {
 
         public VehicleInformation() {
 
-        }  
+        }
 
         /**
          * A string to identify the vehicle vin number.
          *
-         * @param vin The vehicle vin in string format
+         * @param vin The vehicle information number (VIN) as a string, e.g. "1M2AX07Y79M006004"
          */
         public void setVin(String vin) {
             this.vin = vin;
@@ -148,7 +148,7 @@ public final class VehicleInformationContract {
         /**
          * A string to identify the vehicle vin number.
          *
-         * @param vin The vehicle vin in string format
+         * @return vin The vehicle information number (VIN) as a string, e.g. "1M2AX07Y79M006004"
          */
         public String getVin() {
             return vin;
