@@ -110,12 +110,12 @@ public abstract class AbstractVehicleInformationProvider extends ContentProvider
         Log.i(LOG_TAG, "Method name: " + method + ", version: " + version);
 
         switch(method) {
-            case IdentityContract.METHOD_GET_VEHICLE_INFORMATION:
+            case VehicleInformationContract.METHOD_GET_VEHICLE_INFORMATION:
                 VehicleInformationContract.VehicleInformation vehicle = getVehicleInformation(version);
-                if(vehicle != null){
+                if (vehicle != null) {
                     result.putParcelable(VehicleInformationContract.KEY_VEHICLE_INFORMATION, vehicle);
                 } else{
-                    result.putString(VehicleInformationContract.KEY_ERROR, "Sorry, we are unable to fetch the current vehicle information")
+                    result.putString(VehicleInformationContract.KEY_ERROR, "Sorry, we are unable to fetch the current vehicle information");
                 }
             default:
                 Log.w(LOG_TAG, "Unrecognized method name: " + method);
@@ -126,19 +126,10 @@ public abstract class AbstractVehicleInformationProvider extends ContentProvider
     }
 
     /**
-     * Implement this method to return the vehicle vin number.
+     * Implement this method to return the vehicle information with VIN and other properties populated.
      *
      * @param version The {@link VehicleInformationContract}.VERSION
      * @return The vin number.
      */
-    public abstract VehicleInformationContract.VehicleInformation getVin(String version);
-
-    /**
-     * Implement this method to indicate the vehicle is driving or intends to.
-     *
-     * @param version The {@link VehicleInformationContract}.VERSION
-     * @return Indicator the method was successful.
-     */
-    public abstract VehicleInformationContract.VehicleInformation isMoving(String version);
-
+    public abstract VehicleInformationContract.VehicleInformation getVehicleInformation(String version);
 }
