@@ -7,7 +7,6 @@ import android.os.Parcelable;
 
 
 /**
- * TODO: Generate AbstractVehicleInformationProvider class and link it here.
  * Defines the contract for the OpenCab Vehicle Information provider. An OpenCab Vehicle Information provider app should
  * define an Android {@link android.content.ContentProvider} class
  * that follows this contract or should subclass the AbstractVehicleInformationProvider class and
@@ -22,11 +21,11 @@ import android.os.Parcelable;
         Note over A,B: driver logs in or connects to a vehicle mount
         B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
         A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
-        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", MOVING: false}}
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: false}}
         Note over A,B: driver switches to D status or puts vehicle in gear
         B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
         A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
-        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", MOVING: true}}
+        B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: true}}
         Note over A,B: driver logs out or detaches tablet
         B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
         A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
@@ -131,7 +130,7 @@ public final class VehicleInformationContract {
     public static class VehicleInformation implements Parcelable {
 
         private String vin;
-        private boolean moving;
+        private boolean inGear;
 
         public VehicleInformation() {
 
@@ -156,31 +155,33 @@ public final class VehicleInformationContract {
         }
         
         /**
-         * Is the vehicle currently moving?
-         * @return Boolean indicating whether the vehicle is currently moving.
+         * Is the vehicle currently in gear?
+         * True = vehicle is in gear 
+         * False = vehicle is in park or neutral 
+         * @return Boolean indicating whether the vehicle is currently in gear.
          */
-        public boolean isMoving() {
-            return moving;
+        public boolean isInGear() {
+            return inGear;
         }
 
         /**
-         * Indicate that the vehicle is currently moving.  If false, the vehicle is not
+         * Indicate whether the vehicle is in gear.  If false, the vehicle is not
          * and does not intend on moving.
-         * @param status Boolean indicating if the vehicle is currently moving.
+         * @param status Boolean indicating if the vehicle is currently in gear.
          */
-        public void setMoving(boolean status) {
-            moving = status;
+        public void setInGear(boolean status) {
+            inGear = status;
         }        
 
         protected VehicleInformation(Parcel in) {
             this.vin = in.readString();
-            this.moving = (Boolean)in.readValue(Boolean.class.getClassLoader());
+            this.inGear = (Boolean)in.readValue(Boolean.class.getClassLoader());
         }        
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeString(vin);
-            dest.writeValue(moving);
+            dest.writeValue(inGear);
         }      
 
         @Override
