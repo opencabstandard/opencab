@@ -31,7 +31,7 @@ android {
             buildTypes {
                 debug {
                     firebaseAppDistribution {
-                        appId="1:421304787052:android:459b7b0fafdb25bed97849"
+                        appId="1:421304787052:android:46f9359031bd50ccd97849"
                         groups="default"
                     }
                 }
