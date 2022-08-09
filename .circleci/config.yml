@@ -33,7 +33,6 @@ jobs:
     steps:
       - checkout:
           path: ~/code
-      - aws-cli/install
       - run:
           name: Install Firebase credentials
           command: echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > ~/gcloud.json
@@ -59,7 +58,6 @@ jobs:
     steps:
       - checkout:
           path: ~/code
-      - aws-cli/install
       - run:
           name: Install Firebase credentials
           command: echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > ~/gcloud.json
