@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An abstract ContentProvider that implements the {@link IdentityContract}. The provider app can choose
+ * An abstract ContentProvider that implements the {@link VehicleInformationContract}. The provider app can choose
  * to implement the full ContentProvider or to extend this class.  If extending this class it only needs
  * to implement the abstract methods.
  */
-public abstract class AbstractIdentityProvider extends ContentProvider {
-    private static final String LOG_TAG = AbstractIdentityProvider.class.getName();
+public abstract class AbstractVehicleInformationProvider extends ContentProvider {
+    private static final String LOG_TAG = AbstractVehicleInformationProvider.class.getName();
 
     /**
      * Initialize the provider.
@@ -27,7 +27,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        Log.d(LOG_TAG, "Created");
+        Log.d(LOG_TAG, "OnCreate()");
         return true;
     }
 
@@ -99,7 +99,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
      * passed in.  The appropriate abstract method will be called based on the method argument.
      *
      * @param method The desired method to call.
-     * @param version The {@link IdentityContract}.VERSION
+     * @param version The {@link VehicleInformationContract}.VERSION
      * @param extras Additional data if needed by the method.
      * @return {@link Bundle} with results.
      */
@@ -110,16 +110,13 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
         Log.i(LOG_TAG, "Method name: " + method + ", version: " + version);
 
         switch(method) {
-            case IdentityContract.METHOD_GET_ACTIVE_DRIVERS:
-                ArrayList<IdentityContract.Driver> drivers = getActiveDrivers(version);
-                int count = (drivers != null) ? drivers.size() : 0;
-                Log.d(LOG_TAG, "Found active drivers: " + count);
-                result.putParcelableArrayList(IdentityContract.KEY_ACTIVE_DRIVERS, drivers);
-                break;
-            case IdentityContract.METHOD_GET_LOGIN_CREDENTIALS:
-                IdentityContract.LoginCredentials creds = getLoginCredentials(version);
-                result.putParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS, creds);
-                break;
+            case VehicleInformationContract.METHOD_GET_VEHICLE_INFORMATION:
+                VehicleInformationContract.VehicleInformation vehicle = getVehicleInformation(version);
+                if (vehicle != null) {
+                    result.putParcelable(VehicleInformationContract.KEY_VEHICLE_INFORMATION, vehicle);
+                } else{
+                    result.putString(VehicleInformationContract.KEY_ERROR, "Sorry, we are unable to fetch the current vehicle information");
+                }
             default:
                 Log.w(LOG_TAG, "Unrecognized method name: " + method);
                 result.putString(IdentityContract.KEY_ERROR, "The provided method was not recognized: " + method);
@@ -129,19 +126,10 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
     }
 
     /**
-     * Implement this method to return the login credentials.
+     * Implement this method to return the vehicle information with VIN and other properties populated.
      *
-     * @param version The {@link IdentityContract}.VERSION
-     * @return The login credentials.
+     * @param version The {@link VehicleInformationContract}.VERSION
+     * @return The vin number.
      */
-    public abstract IdentityContract.LoginCredentials getLoginCredentials(String version);
-
-    /**
-     * Implement this method to return a {@link ArrayList} of the current active drivers.
-     *
-     * @param version The {@link IdentityContract}.VERSION
-     * @return List of active drivers.
-     */
-    public abstract ArrayList<IdentityContract.Driver> getActiveDrivers(String version);
-
+    public abstract VehicleInformationContract.VehicleInformation getVehicleInformation(String version);
 }

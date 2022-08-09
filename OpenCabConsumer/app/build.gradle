@@ -9,6 +9,10 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
+    sourceSets {
+        main.java.srcDirs += '../../OpenCabProvider/app/src/main/java/org'
+    }
+
     defaultConfig {
         applicationId "com.eleostech.exampleconsumer"
         minSdkVersion 23
@@ -48,27 +52,4 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    // Change to main-stylesheet to not use any default styles
-    options.addStringOption("-add-stylesheet", "../../website/main.css")
-    options.addBooleanOption("-allow-script-in-comments", true)
-    options.addStringOption("overview", "../../website/overview.html")
-    options.addStringOption("header", '<a href="/" ><img class="logo" src="https://opencabstandard.org/wp-content/uploads/2021/03/OpenCab_Logo_White.png" height="25"></a>')
-    options.addStringOption("bottom", '<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script></script><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script>');
-    options.addStringOption("doctitle", "OpenCab — Android API")
-    exclude "com/*"
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-// Ew: https://stackoverflow.com/a/34572606/798224
-// Prevents javadoc whining about NonNull/Nullable annotations that come from
-// the Android libraries.
-afterEvaluate {
-    // could be libraryVariants
-    javadoc.classpath += files(android.applicationVariants.collect { variant ->
-        variant.javaCompileProvider.get().classpath.files
-    })
 }
