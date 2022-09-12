@@ -4,7 +4,9 @@ workflows:
   version: 2
   main:
     jobs:
-      - build:
+      - build_consumer:
+          context: aws
+      - build_provider:
           context: aws
   weekly:
     triggers:
@@ -16,21 +18,21 @@ workflows:
               only:
                 - main
     jobs:
-      - build:
+      - build_consumer:
+          context: aws
+      - build_provider:
           context: aws
 
 orbs:
   android: circleci/android@0.2.1
-  aws-cli: circleci/aws-cli@1.3.2
 
 jobs:
-  build:
-    working_directory: ~/code/OpenCabProvider
+  build_consumer:
+    working_directory: ~/code/OpenCabConsumer
     executor: android/android
     steps:
       - checkout:
           path: ~/code
-      - aws-cli/install
       - run:
           name: Install Firebase credentials
           command: echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > ~/gcloud.json
@@ -49,9 +51,28 @@ jobs:
       - run:
           name: Upload build to Firebase
           command: GOOGLE_APPLICATION_CREDENTIALS="$HOME"/gcloud.json ./gradlew appDistributionUploadDebug
+
+  build_provider:
+    working_directory: ~/code/OpenCabProvider
+    executor: android/android
+    steps:
+      - checkout:
+          path: ~/code
       - run:
-          name: Build documentation
-          command: ./build-docs.sh
+          name: Install Firebase credentials
+          command: echo "$GCLOUD_SERVICE_ACCOUNT_JSON" > ~/gcloud.json
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
-          name: Deploy documentation
-          command: ./upload-docs.sh
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Create release build
+          command: ./gradlew assembleDebug
+      - run:
+          name: Upload build to Firebase
+          command: GOOGLE_APPLICATION_CREDENTIALS="$HOME"/gcloud.json ./gradlew appDistributionUploadDebug
