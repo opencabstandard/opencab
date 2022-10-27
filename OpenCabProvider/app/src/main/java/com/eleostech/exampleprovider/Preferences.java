@@ -19,6 +19,7 @@ public class Preferences {
     private static final String PREFS_HOS = "PREFS_HOS";
     private static final String PREFS_ACTIVE_DRIVERS = "PREFS_ACTIVE_DRIVERS";
     private static final String PREFS_NAVIGATION_STATE = "PREFS_NAVIGATION_STATE";
+    private static final String PREFS_IDENTITY_PROVIDER_SEND_JWT = "PREFS_IDENTITY_PROVIDER_SEND_JWT";
 
     public static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -92,4 +93,15 @@ public class Preferences {
     public static boolean getNavigationState(Context context) {
         return getPreferences(context).getBoolean(PREFS_NAVIGATION_STATE, false);
     }
+
+    public static void setIdentityResponseJWT(Context context, boolean isJWT) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putBoolean(PREFS_IDENTITY_PROVIDER_SEND_JWT, isJWT);
+        editor.commit();
+    }
+
+    public static boolean getIdentityResponseAsJWT(Context context) {
+        return getPreferences(context).getBoolean(PREFS_IDENTITY_PROVIDER_SEND_JWT, false);
+    }
+
 }

@@ -6,6 +6,7 @@
 
     <queries>
         <provider android:authorities="org.opencabstandard.vehicleinformation" />
+        <provider android:authorities="org.opencabstandard.identity" />
     </queries>
 
     <application
@@ -16,13 +17,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.eleostech.exampleconsumer.MainActivity">
+        <activity android:name="com.eleostech.exampleconsumer.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!--intent-filter>
+            <intent-filter>
                 <data
                     android:host="com.eleostech.opencabprovider"
                     android:pathPattern="/hos"
@@ -31,8 +33,28 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter-->
+            </intent-filter>
         </activity>
+
+        <receiver
+            android:name="VehicleInformationChangedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="IdentityChangedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED" />
+                <action android:name="IdentityContract.ACTION_DRIVER_LOGIN" />
+                <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

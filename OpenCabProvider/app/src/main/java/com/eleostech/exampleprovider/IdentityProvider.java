@@ -22,9 +22,14 @@ public class IdentityProvider extends AbstractIdentityProvider {
         IdentityContract.LoginCredentials creds = null;
         String username = Preferences.getUsername((getContext()));
 
-        if(username != null && username.length() > 0) {
+        if (username != null && username.length() > 0) {
             creds = new IdentityContract.LoginCredentials();
-            creds.setToken(createJwt(username));
+            if (Preferences.getIdentityResponseAsJWT(getContext())) {
+                creds.setToken(createJwt(username));
+            } else {
+                creds.setToken(createSampleJson(username));
+            }
+
             creds.setProvider(getContext().getPackageName());
             creds.setAuthority(IdentityContract.AUTHORITY);
         }
@@ -36,6 +41,10 @@ public class IdentityProvider extends AbstractIdentityProvider {
     public ArrayList<IdentityContract.Driver> getActiveDrivers(String version) {
         Log.d(LOG_TAG, "getActiveDrivers()");
         return Preferences.getActiveDrivers(getContext());
+    }
+
+    private String createSampleJson(String username) {
+        return "{\"server_url\":\"https://sample.integation.com\",\"credential_id\":\"" + username + "\",\"credential_token\":\"some_token_1\",\"reseller_id\":\"BEST_RESELLER\",\"external_driver_id\":\"23324\",\"external_vehicle_id\":\"49456\"}";
     }
 
     private String createJwt(String username) {

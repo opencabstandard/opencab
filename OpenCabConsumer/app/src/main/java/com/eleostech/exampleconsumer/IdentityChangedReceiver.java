@@ -7,13 +7,13 @@ import android.util.Log;
 
 import de.greenrobot.event.EventBus;
 
-public class VehicleInformationChangedReceiver extends BroadcastReceiver {
-    private static final String LOG_TAG = VehicleInformationChangedReceiver.class.getCanonicalName();
+public class IdentityChangedReceiver extends BroadcastReceiver {
+    private static final String LOG_TAG = IdentityChangedReceiver.class.getCanonicalName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(LOG_TAG, "onReceiver()");
 
-        EventBus.getDefault().post(new VehicleInformationChangedEvent(intent.getAction()));
+        EventBus.getDefault().post(new IdentityChangedEvent(intent.getAction()));
     }
 }
