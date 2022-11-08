@@ -22,9 +22,14 @@ public class IdentityProvider extends AbstractIdentityProvider {
         IdentityContract.LoginCredentials creds = null;
         String username = Preferences.getUsername((getContext()));
 
-        if(username != null && username.length() > 0) {
+        if (username != null && username.length() > 0) {
             creds = new IdentityContract.LoginCredentials();
-            creds.setToken(createJwt(username));
+            if (Preferences.getIdentityResponseAsJWT(getContext())) {
+                creds.setToken(createJwt(username));
+            } else {
+                creds.setToken(Preferences.getIdentityResponseToken(getContext()));
+            }
+
             creds.setProvider(getContext().getPackageName());
             creds.setAuthority(IdentityContract.AUTHORITY);
         }

@@ -1,65 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20dp">
-
+    android:padding="10dp">
     <LinearLayout
         android:id="@+id/login_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="false">
+        android:layout_centerInParent="false"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Click the button to fetch vehicle information."
-            android:textSize="24sp"/>
+            android:textSize="12dp" />
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/vehicle_information_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="Call Provider"/>
+            android:text="Call Provider" />
+
+        <ListView
+            android:id="@+id/vehicleInformationListView"
+            android:layout_width="wrap_content"
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:background="@color/colorAccent"
+            android:fadingEdge="vertical"
+            android:layout_height="100dp"/>
 
         <TextView
-            android:id="@+id/vin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:textSize="20sp"/>
+            android:text="Click the button to fetch login credentials."
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/identity_provider_login_credentials_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Call Provider" />
+
+        <ListView
+            android:id="@+id/loginCredentialsListView"
+            android:layout_width="wrap_content"
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:background="@color/colorAccent"
+            android:fadingEdge="vertical"
+            android:layout_height="100dp"/>
 
         <TextView
-            android:id="@+id/vehicleId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:textSize="20sp"/>
+            android:text="Click the button to fetch active drivers."
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/identity_active_driver_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Call Provider" />
+
+        <ListView
+            android:id="@+id/activeDriversListView"
+            android:layout_width="wrap_content"
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:background="@color/colorAccent"
+            android:fadingEdge="vertical"
+            android:layout_height="100dp"/>
 
         <TextView
-            android:id="@+id/gear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:textSize="20sp"/>
+            android:text="View broadcasted events in the list below."
+            android:textSize="12dp" />
 
-        <TextView
-            android:id="@+id/error"
+        <ListView
+            android:id="@+id/broadcastListView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="20sp"/>
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:layout_below="@id/login_container"
+            android:background="@color/colorAccent"
+            android:fadingEdge="vertical"
+            android:layout_height="120dp">
+        </ListView>
 
     </LinearLayout>
-
 
 </RelativeLayout>

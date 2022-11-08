@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="broadcast_events">
+        <item>ACTION_IDENTITY_INFORMATION_CHANGED</item>
+        <item>ACTION_DRIVER_LOGIN</item>
+        <item>ACTION_DRIVER_LOGOUT</item>
+        <item>ACTION_VEHICLE_INFORMATION_CHANGED</item>
+    </string-array>
+</resources>

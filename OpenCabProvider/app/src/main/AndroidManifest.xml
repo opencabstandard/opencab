@@ -4,6 +4,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Since this provider sample publishes explicit intents, Android package
+         visibility rules require declaring the specific intents to be published. -->
+    <queries>
+        <intent>
+            <action android:name="IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED" />
+        </intent>
+        <intent>
+            <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+        </intent>
+    </queries>
+
     <application
         android:name="com.eleostech.exampleprovider.Application"
         android:allowBackup="true"
@@ -12,10 +23,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.eleostech.exampleprovider.MainActivity">
+        <activity
+            android:name="com.eleostech.exampleprovider.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="org.opencabstandard.PROVIDER" />
             </intent-filter>
 
             <intent-filter>
@@ -30,17 +44,52 @@
             </intent-filter>
         </activity>
 
-        <provider android:authorities="org.opencabstandard.hos;com.example.fastpass"
-            android:exported="true"
-            android:label="HOS"
-            android:name="com.eleostech.exampleprovider.HOSProvider">
-        </provider>
+        <!-- This single sample app can act as a provider of HOS, identity, and vehicle information.
+             Most real applications would only implement a subset of these, depending on what device,
+             vehicle, or user info that app can serve as a system of record for. -->
 
-        <provider android:authorities="org.opencabstandard.identity;com.example.identity"
+        <!-- Both com.eleostech.exampleprovider and com.eleostech.opencabprovider below
+             should be changed to your app's package name.
+
+             This declaration indicates this app acts an OpenCab provider of HOS information. -->
+        <provider
+            android:name="com.eleostech.exampleprovider.HOSProvider"
+            android:authorities="com.eleostech.opencabprovider.org.opencabstandard.hos"
             android:exported="true"
-            android:label="identity"
-            android:name="com.eleostech.exampleprovider.IdentityProvider">
-        </provider>
+            android:label="HOS" />
+
+        <!-- Both com.eleostech.exampleprovider and com.eleostech.opencabprovider below
+             should be changed to your app's package name.
+
+             This declaration indicates this app acts an OpenCab provider of identity information. -->
+        <provider
+            android:name="com.eleostech.exampleprovider.IdentityProvider"
+            android:authorities="com.eleostech.opencabprovider.org.opencabstandard.identity"
+            android:exported="true"
+            android:label="identity" />
+
+        <!-- Both com.eleostech.exampleprovider and com.eleostech.opencabprovider below
+             should be changed to your app's package name.
+
+             This declaration indicates this app acts an OpenCab provider of vehicle information. -->
+        <provider
+            android:name="com.eleostech.exampleprovider.VehicleInformationProvider"
+            android:authorities="com.eleostech.opencabprovider.org.opencabstandard.vehicleinformation"
+            android:exported="true"
+            android:label="vehicleinformation" />
+
+        <!-- com.eleostech.exampleprovider should be changed to your app's package name.
+
+             This declaration indicates this app acts an OpenCab provider in general,
+             and must be present in addition to any specific provider contracts listed above. -->
+        <service
+            android:name="com.eleostech.exampleprovider.OpenCabProviderService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.opencabstandard.PROVIDER" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

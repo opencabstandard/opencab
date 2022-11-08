@@ -4,8 +4,22 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- These queries allow backwards compatibility with older providers that
+         declare a specific authority. For more information, see "Backwards
+         compatibility with older versions at
+         https://docs.opencabstandard.org/org/opencabstandard/provider/package-summary.html.
+    -->
     <queries>
         <provider android:authorities="org.opencabstandard.vehicleinformation" />
+        <provider android:authorities="org.opencabstandard.identity" />
+    </queries>
+
+    <!-- This query is required for all consumers, and allows them to communicate with
+         OpenCab provider apps under Android's package visibility rules. -->
+    <queries>
+        <intent>
+            <action android:name="org.opencabstandard.PROVIDER" />
+        </intent>
     </queries>
 
     <application
@@ -16,13 +30,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.eleostech.exampleconsumer.MainActivity">
+        <activity
+            android:name="com.eleostech.exampleconsumer.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!--intent-filter>
+            <!-- This intent filter allows this consumer sample to respond to a deep link,
+                 but this isn't OpenCab-specific nor is it required for all consumer apps. -->
+            <intent-filter>
                 <data
                     android:host="com.eleostech.opencabprovider"
                     android:pathPattern="/hos"
@@ -31,8 +49,31 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter-->
+            </intent-filter>
         </activity>
+
+        <!-- These receiver declarations allow the consumer to be notified explicitly when
+             certain provider values change. For more information, see "For broadcast intents" at
+             https://docs.opencabstandard.org/org/opencabstandard/provider/package-summary.html.
+        -->
+        <receiver
+            android:name="VehicleInformationChangedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="IdentityChangedReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="IdentityContract.ACTION_DRIVER_LOGIN" />
+                <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.appdistribution'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -16,11 +16,15 @@ android {
     defaultConfig {
         applicationId "com.eleostech.exampleconsumer"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode Integer.valueOf(System.env.CIRCLE_BUILD_NUM ?: 1)
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 
     buildTypes {
