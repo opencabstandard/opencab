@@ -138,6 +138,7 @@
             android:id="@+id/identity_provider_token_type_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:layout_marginTop="16dp"
             android:text="Send Identity Provider token as JWT" />
 
@@ -147,6 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginStart="6dp"
+            android:visibility="gone"
             android:layout_marginEnd="6dp"
             android:text="Enter token here" />
 

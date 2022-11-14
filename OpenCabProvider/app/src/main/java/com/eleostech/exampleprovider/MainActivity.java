@@ -165,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
                 saveToken(s.toString());
             }
         });
+
+        Preferences.setIdentityResponseToken(this, null);
     }
 
     private void saveToken(String text) {

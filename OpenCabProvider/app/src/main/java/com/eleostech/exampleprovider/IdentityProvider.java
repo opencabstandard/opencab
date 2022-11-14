@@ -22,12 +22,24 @@ public class IdentityProvider extends AbstractIdentityProvider {
         IdentityContract.LoginCredentials creds = null;
         String username = Preferences.getUsername((getContext()));
 
+        /* To make testing and development easy, the sample app can vend either a JWT
+         * or any string entered into the UI as the identity token. However, keep in mind
+         * that the OpenCab standard does not currently require any particular token format.
+         *
+         * It's the responsibility of providers to document the token format they use, how to
+         * verify it, and the unique authority string that can be used to identify a specific format.
+         */
         if (username != null && username.length() > 0) {
             creds = new IdentityContract.LoginCredentials();
             if (Preferences.getIdentityResponseAsJWT(getContext())) {
                 creds.setToken(createJwt(username));
             } else {
-                creds.setToken(Preferences.getIdentityResponseToken(getContext()));
+                String response = null;
+                String identityResponseToken = Preferences.getIdentityResponseToken(getContext());
+                if (identityResponseToken != null && identityResponseToken.length() > 0) {
+                    response = identityResponseToken;
+                }
+                creds.setToken(response);
             }
 
             creds.setProvider(getContext().getPackageName());
@@ -44,6 +56,13 @@ public class IdentityProvider extends AbstractIdentityProvider {
     }
 
     private String createJwt(String username) {
+        /*
+        WARNING: This code generates an insecure, unsigned JWT for example purposes.
+
+        OpenCab does not require the use of JWT for tokens. If you do choose to use JWT,
+        you need to sign the token server-side, as a signing key cannot be safely
+        distributed in a mobile app.
+        */
         Claims claims = Jwts.claims();
         claims.put("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", username);
         claims.put("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", username);

@@ -103,7 +103,7 @@ public class Preferences {
 
 
     public static boolean getIdentityResponseAsJWT(Context context) {
-        return getPreferences(context).getBoolean(PREFS_IDENTITY_PROVIDER_SEND_JWT, false);
+        return getPreferences(context).getBoolean(PREFS_IDENTITY_PROVIDER_SEND_JWT, true);
     }
 
     public static void setIdentityResponseToken(Context context, String token) {
