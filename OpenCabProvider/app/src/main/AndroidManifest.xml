@@ -8,10 +8,10 @@
          visibility rules require declaring the specific intents to be published. -->
     <queries>
         <intent>
-            <action android:name="IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED" />
+            <action android:name="org.opencabstandard.ACTION_IDENTITY_INFORMATION_CHANGED" />
         </intent>
         <intent>
-            <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+            <action android:name="com.opencabstandard.ACTION_DRIVER_LOGOUT" />
         </intent>
     </queries>
 

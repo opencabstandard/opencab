@@ -61,7 +61,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED" />
+                <action android:name="com.opencabstandard.VEHICLE_INFORMATION_CHANGED" />
             </intent-filter>
         </receiver>
 
@@ -70,8 +70,8 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="IdentityContract.ACTION_DRIVER_LOGIN" />
-                <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+                <action android:name="org.opencabstandard.ACTION_DRIVER_LOGIN" />
+                <action android:name="com.opencabstandard.ACTION_DRIVER_LOGOUT" />
             </intent-filter>
         </receiver>
 
