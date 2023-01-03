@@ -27,11 +27,34 @@ public final class IdentityContract {
     public static final String AUTHORITY = "org.opencabstandard.identity";
 
     /**
-     * This Action is broadcast when the driver logs out of the OpenCab provider app.  The OpenCab
-     * consumer app may listen to this broadcast and perform a logout of the consumer app.
+     * This Action is broadcast when the driver logs out of the OpenCab provider app. Providers MUST publish this
+     * event when a user (either a team driver or the last primary user) logs out of the app. This event
+     * SHOULD correspond to a change in the result of <code>METHOD_GET_ACTIVE_DRIVERS</code>
      *
+     * <p>The OpenCab consumer app MAY listen to this broadcast and perform a logout of the consumer app.</p>
+     *
+     * <p>Note: The underlying string value of this constant erroneously begins with <code>com.opencabstandard</code>
+     * rather than <code>org.opencabstandard</code>. This error is preserved in order to maintain backwards compatibility.</p>
      */
     public static final String ACTION_DRIVER_LOGOUT = "com.opencabstandard.ACTION_DRIVER_LOGOUT";
+
+    /**
+     * This Action is broadcast when the identity information changes.
+     * <p>
+     * You can subscribe to this event to receive updates indicating the active driver, or information
+     * about the active driver (such as their LoginCredentials token) has been updated. To get the updated value,
+     * call METHOD_GET_LOGIN_CREDENTIALS after receiving this event.
+     * </p>
+     *
+     * <p>Providers MUST publish this event when the values returned by <code>METHOD_GET_LOGIN_CREDENTIALS</code> change.<p>
+     */
+    public static final String ACTION_IDENTITY_INFORMATION_CHANGED = "org.opencabstandard.ACTION_IDENTITY_INFORMATION_CHANGED";
+
+    /**
+     * This Action is broadcast when the user logs in to the application. Providers MUST publish this event
+     * when a user authenticates with the app, such as by entering their credentials.
+     */
+    public static final String ACTION_DRIVER_LOGIN = "org.opencabstandard.ACTION_DRIVER_LOGIN";
 
     /**
      * Provider method for retrieving the login credentials.  The credentials include a token that uniquely
@@ -53,7 +76,7 @@ public final class IdentityContract {
      * </pre>
      *
      * <p>
-     *     Diagram:
+     * Diagram:
      * </p>
      *
      * <div class="mermaid">
@@ -86,7 +109,7 @@ public final class IdentityContract {
      * </pre>
      *
      * <p>
-     *     Diagram:
+     * Diagram:
      * </p>
      *
      * <div class="mermaid">
@@ -259,6 +282,7 @@ public final class IdentityContract {
 
         /**
          * Set the driver username.
+         *
          * @param user The username of the driver.
          */
         public void setUsername(String user) {
@@ -267,6 +291,7 @@ public final class IdentityContract {
 
         /**
          * Get the username of the driver.
+         *
          * @return The username of the driver.
          */
         public String getUsername() {
@@ -275,6 +300,7 @@ public final class IdentityContract {
 
         /**
          * Is this driver currently operating the vehicle?
+         *
          * @return Boolean indicating whether this driver is operating the vehicle.
          */
         public boolean isDriving() {
@@ -284,6 +310,7 @@ public final class IdentityContract {
         /**
          * Indicate that this driver is currently operating the vehicle.  If false, the driver is
          * a co-driver.
+         *
          * @param status Boolean indicating if this driver is operating the vehicle.
          */
         public void setDriving(boolean status) {
@@ -296,7 +323,7 @@ public final class IdentityContract {
 
         protected Driver(Parcel in) {
             this.username = in.readString();
-            this.driving = (Boolean)in.readValue(Boolean.class.getClassLoader());
+            this.driving = (Boolean) in.readValue(Boolean.class.getClassLoader());
         }
 
         @Override
