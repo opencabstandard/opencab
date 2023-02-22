@@ -326,7 +326,30 @@ public final class IdentityContract {
         private boolean driving;
 
         /**
-         * Set the driver username.
+         * Set the driver username. A username can be any string defined by an
+         * identity provider which MUST 1) have a one-to-one correspondence to a person or user AND
+         * 2) MUST remain stable during a login session. It does not necessarily need to be
+         * human-readable or directly correspond to a login username.
+         *
+         * <p>A username need only be unique for a single {@link AUTHORITY}.
+         *
+         * <p>Username MUST be treated as case-sensitive for the purposes of comparison.
+         *
+         * <p>Providers MAY convert usernames to
+         * upper or lowercase to normalize case if the letter case is otherwise unpredictable.
+         *
+         * <p>This MUST NOT be used by consumer apps for identifying a driver or login session.
+         * Username SHOULD be used as a stable identifier for detecting changes to other properties,
+         * such as {@link Driver#isDriving}, when multiple drivers are active at the same time.
+         *
+         * <p>In other words, if a consumer app detects a change
+         * to the usernames of the drivers returned by {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * it MUST be because the set of active users or drivers has logically changed, e.g.,
+         * a driver logged in or out.
+         *
+         * <p>For example, the order in which two drivers are returned in {@link #KEY_ACTIVE_DRIVERS}
+         * might change. The respective usernames of those two drivers can be used to determine that
+         * there is no real change in the set of users operating the app or vehicle if this occurs.
          *
          * <p>This is a convenience method for use by provider apps in
          * constructing a Driver instance. It has no effect if called
@@ -339,7 +362,8 @@ public final class IdentityContract {
         }
 
         /**
-         * Get the username of the driver.
+         * Get the username of the driver. See {@link #setUsername} for details about possible
+         * values and how to make use of them.
          *
          * @return The username of the driver.
          */
