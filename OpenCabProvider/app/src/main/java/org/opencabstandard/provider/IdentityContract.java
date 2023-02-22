@@ -350,6 +350,12 @@ public final class IdentityContract {
         /**
          * Is this driver currently operating the vehicle?
          *
+         * <p>Consumer apps can use the indication that driving is "true" to lock portions of their
+         * user interface to reduce driver distraction. In addition, in a team-driving scenario
+         * where multiple Driver instances are returned from {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * a consumer app can keep track of the username of the driver marked as "driving" and
+         * update settings or preferences to reflect a change in the active driver.
+         *
          * @return Boolean indicating whether this driver is operating the vehicle.
          */
         public boolean isDriving() {
@@ -359,6 +365,12 @@ public final class IdentityContract {
         /**
          * Indicate that this driver is currently operating the vehicle.  If false, the driver is
          * a co-driver.
+         *
+         * <p>Consumer apps can use the indication that driving is "true" to lock portions of their
+         * user interface to reduce driver distraction. In addition, in a team-driving scenario
+         * where multiple Driver instances are returned from {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * a consumer app can keep track of the username of the driver marked as "driving" and
+         * update settings or preferences to reflect a change in the active driver.
          *
          * <p>This is a convenience method for use by provider apps in
          * constructing a Driver instance. It has no effect on a driver's status if called
