@@ -171,7 +171,24 @@ public final class IdentityContract {
     }
 
     /**
-     * Object containing the login credentials.
+     * A plain old Java object representing a login session information.
+     *
+     * <p>This is a convenience data class that both providers and consumers can use to
+     * represent login session information shared between apps as part of the Identity contract.
+     *
+     * <p>In particular, this class handles serializing and deserializing the data returned from
+     * to (for the provider app) and from (for the consumer app) the actual {@link android.os.Bundle} returned
+     * when a consumer calls {@link #METHOD_GET_LOGIN_CREDENTIALS}.
+     *
+     * <p>Since the actual value passed between a provider and consumer app is an Android {@link android.os.Bundle},
+     * the setters on this class are for convenience in constructing an object. Calling one of the setters
+     * in a consumer app has no effect on the provider, and vice versa. To signal changes to the active driver
+     * information, provider apps should publish a {@link #ACTION_DRIVER_LOGIN}, {@link #ACTION_DRIVER_LOGOUT},
+     * or {@link #ACTION_IDENTITY_INFORMATION_CHANGED} event and begin returning updated information
+     * from {@link #METHOD_GET_LOGIN_CREDENTIALS} when requested.
+     *
+     * <p>The use of this class is optional, so long as providers and consumers honor the same parceling order for
+     * the object's properties.
      */
     public static class LoginCredentials implements Parcelable {
 
@@ -187,6 +204,10 @@ public final class IdentityContract {
          * An authentication token that can be used to uniquely and securely identify the driver.
          * For more details about possible types of tokens, see {@link IdentityContract}.
          *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
+         *
          * @param token The login token
          */
         public void setToken(String token) {
@@ -195,6 +216,10 @@ public final class IdentityContract {
 
         /**
          * The package name of the OpenCab identity provider.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
          *
          * @param provider The provider package name.
          */
@@ -205,6 +230,10 @@ public final class IdentityContract {
         /**
          * A URL that can be used to authenticate the login token.
          * For more details about how OpenCab interacts with authentication systems, see {@link IdentityContract}.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
          *
          * @param authority The authority URL.
          */
@@ -273,7 +302,23 @@ public final class IdentityContract {
     }
 
     /**
-     * Object representing a Driver.
+     * A plain old Java object representing a Driver.
+     *
+     * <p>This is a convenience data class that both providers and consumers can use to
+     * represent the driver information shared between apps as part of the Identity contract.
+     *
+     * <p>In particular, this class handles serializing and deserializing the data returned from
+     * to (for the provider app) and from (for the consumer app) the actual {@link android.os.Bundle} returned
+     * when a consumer calls {@link #METHOD_GET_ACTIVE_DRIVERS}.
+     *
+     * <p>Since the actual value passed between a provider and consumer app is an Android {@link android.os.Bundle},
+     * the setters on this class are for convenience in constructing an object. Calling one of the setters
+     * in a consumer app has no effect on the provider, and vice versa. To signal changes to the active driver
+     * information, provider apps should publish a {@link #ACTION_DRIVER_LOGIN} or {@link #ACTION_DRIVER_LOGOUT}
+     * event and begin returning updated information from {@link #METHOD_GET_ACTIVE_DRIVERS} when requested.
+     *
+     * <p>The use of this class is optional, so long as providers and consumers honor the same parceling order for
+     * the object's properties.
      */
     public static class Driver implements Parcelable {
 
@@ -282,6 +327,10 @@ public final class IdentityContract {
 
         /**
          * Set the driver username.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing a Driver instance. It has no effect if called
+         * on a {@link Driver} object in a consumer app.
          *
          * @param user The username of the driver.
          */
@@ -310,6 +359,10 @@ public final class IdentityContract {
         /**
          * Indicate that this driver is currently operating the vehicle.  If false, the driver is
          * a co-driver.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing a Driver instance. It has no effect on a driver's status if called
+         * on a {@link Driver} object in a consumer app.
          *
          * @param status Boolean indicating if this driver is operating the vehicle.
          */
