@@ -3,6 +3,8 @@
  * <i>providers</i>, the data types communicated to and from those providers, as well as abstract
  * implementations that reduce the boilerplate code needed for an implementation.
  *
+ * <p>You can <a href="https://github.com/opencabstandard/opencab/edit/master/OpenCabProvider/app/src/main/java/org/opencabstandard/provider/package-info.java">propose changes or improvements to this documentation using GitHub.</a>
+ *
  * <h3>Overview</h3>
  *
  * <p>An OpenCab <i>provider</i> is a mechanism for communicating between two Android apps running
