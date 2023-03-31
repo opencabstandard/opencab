@@ -311,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
         item4.setLabel("Time since Rest");
         item4.setValueType(HOSContract.Clock.ValueType.COUNTUP);
         item4.setValue(format.format(new Date()));
+        item4.setDurationSeconds(Double.valueOf(240));
         clocks.add(item4);
 
         HOSContract.HOSStatus hosStatus = new HOSContract.HOSStatus();

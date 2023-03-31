@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
-
+import org.opencabstandard.provider.AbstractHOSProvider;
 /**
  * Defines the contract for the OpenCab HOS Content provider.  An OpenCab HOS provider app should define
  * an Android {@link android.content.ContentProvider} class that follows this contract or should extend
@@ -18,7 +18,7 @@ public final class HOSContract {
      * be passed as an argument to all method calls to the provider. The provider may reject or handle
      * appropriately if the VERSION does not match the expected value when passed to the method calls.
      */
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     /**
      * This authority is used for querying the HOS provider.  This should be declared in the manifest
@@ -47,7 +47,7 @@ public final class HOSContract {
      * </pre>
      *
      * <p>
-     *     Diagram:
+     * Diagram:
      * </p>
      *
      * <div class="mermaid">
@@ -79,7 +79,7 @@ public final class HOSContract {
      * </pre>
      *
      * <p>
-     *     Diagram:
+     * Diagram:
      * </p>
      *
      * <div class="mermaid">
@@ -110,7 +110,7 @@ public final class HOSContract {
      * </pre>
      *
      * <p>
-     *     Diagram:
+     * Diagram:
      * </p>
      *
      * <div class="mermaid">
@@ -198,6 +198,7 @@ public final class HOSContract {
 
         /**
          * The list of current HOS clocks for the driver.
+         *
          * @return The HOS clocks
          */
         public List<Clock> getClocks() {
@@ -264,7 +265,7 @@ public final class HOSContract {
      * value can be one of the types defined in the {@link ValueType} enum.
      *
      * <p>
-     *     An example of the different types of clocks is shown in the image below:
+     * An example of the different types of clocks is shown in the image below:
      * </p>
      *
      * <img src="../../../images/clocks-example.png" alt="Hours of service screenshot from the mobile application.">
@@ -275,6 +276,7 @@ public final class HOSContract {
         private ValueType valueType;
         private boolean important;
         private boolean limitsDrivingRange;
+        private Double durationSeconds;
 
         /**
          * Allowed types for valueType field.
@@ -282,8 +284,14 @@ public final class HOSContract {
         public enum ValueType {
 
             /**
-             *   The value field with contain a simple string. It can be informational information
-             *   such as the driver username or something like "Adverse Weather Conditions".
+             * The value field will contain a simple string. It can be informational information
+             * such as the driver username or something like "Adverse Weather Conditions".
+             *
+             * You can also use a string for an ELD clock duration (like 4:32) if you want to ensure
+             * your own specific rounding and formatting logic is used. In this case, providers SHOULD
+             * provide the actual duration in seconds using the {@link durationSeconds} property. Consumers MUST
+             * display the <code>value</code>, but MAY use {@link durationSeconds} for business logic other than
+             * pure information display.
              */
             STRING("string"),
 
@@ -347,7 +355,7 @@ public final class HOSContract {
         /**
          * The value type of the clock.  See {@link ValueType} for the possible types.
          *
-         * @param  valueType The valueType for the clock.
+         * @param valueType The valueType for the clock.
          */
         public void setValueType(ValueType valueType) {
             this.valueType = valueType;
@@ -378,7 +386,7 @@ public final class HOSContract {
         /**
          * Get the label for the clock.
          *
-         * @return  The label for the clock.
+         * @return The label for the clock.
          */
         public String getLabel() {
             return label;
@@ -387,7 +395,7 @@ public final class HOSContract {
         /**
          * Get the value for the clock.
          *
-         * @return  The value for the clock.
+         * @return The value for the clock.
          */
         public String getValue() {
             return value;
@@ -395,7 +403,7 @@ public final class HOSContract {
 
         /**
          * Get the value type
-         * @return  The value type for the clock.
+         * @return The value type for the clock.
          */
         public ValueType getValueType() {
             return valueType;
@@ -419,6 +427,24 @@ public final class HOSContract {
             return limitsDrivingRange;
         }
 
+        /**
+         * Get the duration seconds
+         *
+         * @return The duration seconds for the clock.
+         */
+        public Double getDurationSeconds() {
+            return durationSeconds;
+        }
+
+        /**
+         * The duration seconds for the clock.
+         *
+         * @param durationSeconds The duration seconds for the clock.
+         */
+        public void setDurationSeconds(Double durationSeconds) {
+            this.durationSeconds = durationSeconds;
+        }
+
         @Override
         public int describeContents() {
             return 0;
@@ -431,6 +457,7 @@ public final class HOSContract {
             dest.writeString(valueType.name());
             dest.writeValue(important);
             dest.writeValue(limitsDrivingRange);
+            dest.writeValue(durationSeconds);
         }
 
         private Clock(Parcel in) {
@@ -439,6 +466,7 @@ public final class HOSContract {
             valueType = ValueType.valueOf(in.readString());
             important = (Boolean) in.readValue(Boolean.class.getClassLoader());
             limitsDrivingRange = (Boolean) in.readValue(Boolean.class.getClassLoader());
+            durationSeconds = (Double) in.readValue(Double.class.getClassLoader());
         }
 
         public static Creator<Clock> CREATOR = new Creator<Clock>() {

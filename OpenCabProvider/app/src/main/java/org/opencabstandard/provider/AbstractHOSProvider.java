@@ -10,7 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import org.opencabstandard.provider.HOSContract;
 
 /**
  * An abstract ContentProvider that implements the {@link HOSContract}.  The provider app can choose

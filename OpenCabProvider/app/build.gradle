@@ -19,6 +19,11 @@ android {
         viewBinding true
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -45,8 +50,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-gson:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 task javadoc(type: Javadoc) {

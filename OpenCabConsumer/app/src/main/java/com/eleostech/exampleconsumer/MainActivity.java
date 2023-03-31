@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.eleostech.exampleconsumer.databinding.ActivityMainBinding;
 
+import org.opencabstandard.provider.HOSContract;
 import org.opencabstandard.provider.IdentityContract;
 import org.opencabstandard.provider.VehicleInformationContract;
 
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapterLoginCredentials;
     private ArrayAdapter<String> adapterActiveDrivers;
 
+    private ArrayAdapter<String> adapterHos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         binding.vehicleInformationButton.setOnClickListener(v -> callVehicleInformationProvider());
         binding.identityProviderLoginCredentialsButton.setOnClickListener(v -> callIdentityProviderGetLoginCredentials());
         binding.identityActiveDriverButton.setOnClickListener(v -> callIdentityProviderGetActiveDrivers());
+        binding.hosProviderButton.setOnClickListener(v -> callHosProviderGetHos());
+
         EventBus.getDefault().register(this);
 
         adapterBroadcastedEvents = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
@@ -57,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         adapterActiveDrivers = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         binding.activeDriversListView.setAdapter(adapterActiveDrivers);
+
+        adapterHos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        binding.hosListView.setAdapter(adapterHos);
     }
 
     @Override
@@ -165,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                                     IdentityContract.LoginCredentials loginCredentials = result.getParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS);
                                     Log.d(LOG_TAG, "Got token: " + loginCredentials);
                                     if (loginCredentials != null) {
-                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName  + ", Token: " + loginCredentials.getToken() + ", Provider: " + loginCredentials.getProvider(), 0);
+                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Token: " + loginCredentials.getToken() + ", Provider: " + loginCredentials.getProvider(), 0);
                                     } else {
                                         adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No login credentials found", 0);
                                     }
@@ -227,6 +235,62 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 Log.d(LOG_TAG, "Result from provider is null.");
                                 adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void callHosProviderGetHos() {
+        Log.d(LOG_TAG, "callHosProviderGetHos()");
+        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+        search:
+        for (PackageInfo pkg : packages) {
+            if (pkg.providers != null) {
+                for (ProviderInfo provider : pkg.providers) {
+                    if (provider.authority != null) {
+                        if (provider.authority.endsWith(".org.opencabstandard.hos")) {
+                            ContentResolver resolver = getApplicationContext().getContentResolver();
+                            Uri authority = Uri.parse("content://" + provider.authority);
+                            Bundle result;
+                            SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
+                            String dateTime = s.format(new Date());
+                            try {
+                                result = resolver.call(authority, "getHOS", "0.3", null);
+                            } catch (Exception ex) {
+                                Log.i(LOG_TAG, "Error calling provider: ", ex);
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
+                                return;
+                            }
+
+                            if (result != null) {
+                                Log.d(LOG_TAG, "Got result!" + result);
+                                result.setClassLoader(HOSContract.class.getClassLoader());
+                                for (String key: result.keySet())
+                                {
+                                    Log.d(LOG_TAG, key + " is a key in the bundle");
+                                }
+                                if (result.containsKey(HOSContract.KEY_HOS)) {
+                                    HOSContract.HOSStatus status = result.getParcelable(HOSContract.KEY_HOS);
+                                    Log.d(LOG_TAG, "Got hos: " + status);
+                                    if (status != null && status.getClocks().size() > 0) {
+                                        for (HOSContract.Clock clock : status.getClocks()) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                        }
+                                    } else {
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No HOS data found", 0);
+
+                                    }
+                                } else if (result.containsKey(HOSContract.KEY_ERROR)) {
+                                    String error = result.getString(HOSContract.KEY_ERROR);
+                                    Log.d(LOG_TAG, "Error: " + error);
+                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                }
+                            } else {
+                                Log.d(LOG_TAG, "Result from provider is null.");
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
                             }
                         }
                     }
