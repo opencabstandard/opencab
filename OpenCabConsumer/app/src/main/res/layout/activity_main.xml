@@ -60,6 +60,46 @@
             android:textSize="20sp"/>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/hos_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login_container"
+        android:orientation="vertical"
+        android:layout_centerInParent="false">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click the button to fetch HOS information."
+            android:textSize="24sp"/>
+
+        <Button
+            android:id="@+id/hos_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Call Provider"/>
+
+        <TextView
+            android:id="@+id/clock_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:text="AAAAAAAAA"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/clock_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
 
 
 </RelativeLayout>

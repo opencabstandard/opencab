@@ -1,32 +1,24 @@
 package com.eleostech.exampleconsumer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.eleostech.exampleconsumer.R;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencabstandard.provider.VehicleInformationContract;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
+
+import org.opencabstandard.provider.HOSContract;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
@@ -37,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView idView;
     private TextView gearView;
     private TextView errorView;
+    private TextView clockDuration;
+
+    private TextView clockErrorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +45,18 @@ public class MainActivity extends AppCompatActivity {
         gearView = findViewById(R.id.gear);
         errorView = findViewById(R.id.error);
 
+        clockDuration = findViewById(R.id.clock_duration);
+        clockErrorView = findViewById(R.id.clock_error);
+
         Button login = findViewById(R.id.login_button);
         login.setOnClickListener(new View.OnClickListener() {
-                                     @Override
-                                     public void onClick(View v) {
-                                         callProvider();
-                                     }
-                                 });
+            @Override
+            public void onClick(View v) {
+                callProvider();
+            }
+        });
+        Button hosButton = findViewById(R.id.hos_button);
+        hosButton.setOnClickListener(v -> callHOSProvider());
 
         EventBus.getDefault().register(this);
     }
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         errorView.setText("");
     }
 
-    private  Date addHoursToDate(Date date, int hours) {
+    private Date addHoursToDate(Date date, int hours) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.HOUR_OF_DAY, hours);
@@ -131,4 +131,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void callHOSProvider() {
+        Log.d(LOG_TAG, "callProvider()");
+        clear();
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        Uri authority = Uri.parse("content://" + HOSContract.AUTHORITY);
+        Bundle result = null;
+        try {
+            result = resolver.call(authority, "getHOS", "0.3", null);
+        } catch (Exception ex) {
+            Log.i(LOG_TAG, "Error calling provider: ", ex);
+            errorView.setText(ex.getMessage());
+            return;
+        }
+
+        if (result != null) {
+            Log.d(LOG_TAG, "Got result!");
+            result.setClassLoader(HOSContract.class.getClassLoader());
+            if (result.containsKey(HOSContract.KEY_HOS)) {
+                HOSContract.HOSStatus status = result.getParcelable(HOSContract.KEY_HOS);
+                Log.d(LOG_TAG, "Got clocks");
+                String clockString = null;
+                if (status != null && status.getClocks() != null && status.getClocks().size() > 0) {
+
+                    for (HOSContract.Clock clock : status.getClocks()) {
+                        if (clock.getDurationSeconds() != null) {
+                            if (clockString != null) {
+                                clockString = clockString + ";";
+                                clockString = clockString + "Clock duration: " + clock.getDurationSeconds().toString();
+                            } else {
+                                clockString = "Clock duration: " + clock.getDurationSeconds().toString();
+                            }
+                        }
+                    }
+                }
+                clockDuration.setText(clockString != null ? clockString : "Found no clock with duration");
+            } else if (result.containsKey(HOSContract.KEY_ERROR)) {
+                String error = result.getString(HOSContract.KEY_ERROR);
+                Log.d(LOG_TAG, "Error: " + error);
+                clockErrorView.setText(error);
+            }
+        } else {
+            Log.d(LOG_TAG, "Result from provider is null.");
+            clockErrorView.setText("Result from provider is null.");
+        }
+    }
 }

@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import org.opencabstandard.provider.HOSContract;
+
 /**
  * An abstract ContentProvider that implements the {@link HOSContract}.  The provider app can choose
  * to implement the full ContentProvider or to extend this class.  If extending this class it only needs
