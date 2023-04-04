@@ -289,7 +289,7 @@ public final class HOSContract {
 
             /**
              *  Indicates that the value field will contain a date in
-             *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
+             *  <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
              *  format.  The date will appear formatted as "MM/dd/yyyy".  An example for this type of clock
              *  could be the date of next required truck service.
              */
@@ -297,7 +297,7 @@ public final class HOSContract {
 
             /**
              *  Indicates that the value field will contain a date in
-             *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
+             *  <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
              *  format that will be shown as a clock counting down to zero.  The counter will not go below zero.
              *  An example for this type of clock could be the remaining available drive time.
              */
@@ -305,7 +305,7 @@ public final class HOSContract {
 
             /**
              *  Indicates that the value field will contain a date in
-             *  <a href="https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14">RFC3339</a>
+             *  <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
              *  format that will be shown as a clock counting up from the provided date.  An example for this
              *  type of clock could be the number of hours since last rest.
              */
