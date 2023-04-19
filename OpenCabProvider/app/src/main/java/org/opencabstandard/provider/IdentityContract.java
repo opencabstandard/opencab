@@ -299,19 +299,42 @@ public final class IdentityContract {
         }
 
         /**
-         * Is this driver currently operating the vehicle?
+         * Set to true for the driver who is currently active on the device as determined
+         * by the authentication mechanism or UI, such as a dropdown for switching between
+         * which user’s information is currently displayed. This does not indicate which
+         * driver is marked as driving in the ELD, although for apps that act as providers
+         * for both the Identity and HOS contracts, the value of this field MAY be driven
+         * by ELD state. If the value of KEY_ACTIVE_DRIVERS is non-empty, exactly one driver
+         * MUST be marked with isDriving set to true.
          *
-         * @return Boolean indicating whether this driver is operating the vehicle.
+         * <p>Consuming apps that only support a single user session at a time MUST track
+         * which driver has this property set and perform a logout/login as necessary to
+         * keep in sync with the identity provider’s active driver. Consuming apps that
+         * support access by multiple users at once MAY use this property to sync which
+         * user’s information is displayed with the identity provider’s active driver.
+         *
+         * @return Boolean indicating whether this driver is the primary or active user.
          */
         public boolean isDriving() {
             return driving;
         }
 
         /**
-         * Indicate that this driver is currently operating the vehicle.  If false, the driver is
-         * a co-driver.
+         * Set to true for the driver who is currently active on the device as determined
+         * by the authentication mechanism or UI, such as a dropdown for switching between
+         * which user’s information is currently displayed. This does not indicate which
+         * driver is marked as driving in the ELD, although for apps that act as providers
+         * for both the Identity and HOS contracts, the value of this field MAY be driven
+         * by ELD state. If the value of KEY_ACTIVE_DRIVERS is non-empty, exactly one driver
+         * MUST be marked with isDriving set to true.
          *
-         * @param status Boolean indicating if this driver is operating the vehicle.
+         * <p>Consuming apps that only support a single user session at a time MUST track
+         * which driver has this property set and perform a logout/login as necessary to
+         * keep in sync with the identity provider’s active driver. Consuming apps that
+         * support access by multiple users at once MAY use this property to sync which
+         * user’s information is displayed with the identity provider’s active driver.
+         *
+         * @param status Boolean indicating whether this driver is the primary or active user.
          */
         public void setDriving(boolean status) {
             driving = status;
