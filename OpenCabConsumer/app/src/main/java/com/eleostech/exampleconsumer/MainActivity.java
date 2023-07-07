@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getVehicleInformation", "0.2", null);
+                                result = resolver.call(authority, VehicleInformationContract.METHOD_GET_VEHICLE_INFORMATION, VehicleInformationContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getLoginCredentials", "0.2", null);
+                                result = resolver.call(authority, IdentityContract.METHOD_GET_LOGIN_CREDENTIALS, IdentityContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -235,18 +235,20 @@ public class MainActivity extends AppCompatActivity {
                             if (result != null) {
                                 Log.d(LOG_TAG, "Got result!");
                                 result.setClassLoader(IdentityContract.class.getClassLoader());
-                                if (result.containsKey(IdentityContract.KEY_LOGIN_CREDENTIALS)) {
-                                    IdentityContract.LoginCredentials loginCredentials = result.getParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS);
-                                    Log.d(LOG_TAG, "Got token: " + loginCredentials);
-                                    if (loginCredentials != null) {
-                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Token: " + loginCredentials.getToken() + ", Provider: " + loginCredentials.getProvider(), 0);
+                                if (result.containsKey(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS)) {
+                                    ArrayList<IdentityContract.DriverSession> driverSessionArrayList = result.getParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS);
+                                    Log.d(LOG_TAG, "Found driver sessions: " + driverSessionArrayList);
+                                    if (driverSessionArrayList != null && driverSessionArrayList.size() > 0) {
+                                        for (IdentityContract.DriverSession driverSession : driverSessionArrayList) {
+                                            adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Username: " + driverSession.getUsername() + ", Token: " + driverSession.getLoginCredentials().getToken() + ", Provider: " + driverSession.getLoginCredentials().getProvider(), 0);
+                                        }
                                     } else {
-                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No login credentials found", 0);
+                                        adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Error: No login credentials found", 0);
                                     }
                                 } else if (result.containsKey(IdentityContract.KEY_ERROR)) {
                                     String error = result.getString(IdentityContract.KEY_ERROR);
                                     Log.d(LOG_TAG, "Error: " + error);
-                                    adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                    adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Error: " + error, 0);
                                 }
                             } else {
                                 Log.d(LOG_TAG, "Result from provider is null.");
@@ -274,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getActiveDrivers", "0.2", null);
+                                result = resolver.call(authority, IdentityContract.METHOD_GET_ACTIVE_DRIVERS, IdentityContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -288,7 +290,9 @@ public class MainActivity extends AppCompatActivity {
                                     List<IdentityContract.Driver> drivers = result.getParcelableArrayList(IdentityContract.KEY_ACTIVE_DRIVERS);
                                     Log.d(LOG_TAG, "Got drivers: " + drivers);
                                     if (drivers != null && drivers.size() > 0) {
-                                        adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Driver Name: " + drivers.get(0).getUsername() + ", Is Driving: " + drivers.get(0).isDriving(), 0);
+                                        for (IdentityContract.Driver driver : drivers) {
+                                            adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Driver Name: " + driver.getUsername() + ", Is Driving: " + driver.isDriving(), 0);
+                                        }
                                     } else {
                                         adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No active drivers found", 0);
 

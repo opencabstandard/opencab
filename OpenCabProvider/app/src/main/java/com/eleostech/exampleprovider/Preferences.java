@@ -25,6 +25,9 @@ public class Preferences {
     private static final String PREFS_IDENTITY_PROVIDER_TOKEN = "PREFS_IDENTITY_PROVIDER_TOKEN";
 
     private static final String PREFS_HOS_VERSION = "PREFS_HOS_VERSION";
+    private static final String PREFS_IDENTITY_PROVIDER_TEAM_DRIVER = "PREFS_IDENTITY_PROVIDER_TEAM_DRIVER";
+
+    private static final String PREFS_MANAGE_ACTION = "PREFS_MANAGE_ACTION";
 
     public static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -119,6 +122,26 @@ public class Preferences {
 
     public static String getIdentityResponseToken(Context context) {
         return getPreferences(context).getString(PREFS_IDENTITY_PROVIDER_TOKEN, "");
+    }
+
+    public static void setIdentityProviderTeamDriver(Context context, boolean isEnabled) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putBoolean(PREFS_IDENTITY_PROVIDER_TEAM_DRIVER, isEnabled);
+        editor.commit();
+    }
+
+    public static boolean isIdentityProviderTeamDriverEnabled(Context context) {
+        return getPreferences(context).getBoolean(PREFS_IDENTITY_PROVIDER_TEAM_DRIVER, false);
+    }
+
+    public static boolean isManageAction(Context context) {
+        return getPreferences(context).getBoolean(PREFS_MANAGE_ACTION, true);
+    }
+
+    public static void setManageAction(Context context, boolean isEnabled) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putBoolean(PREFS_MANAGE_ACTION, isEnabled);
+        editor.commit();
     }
 
     public static void setHosVersion(Context context, String version) {

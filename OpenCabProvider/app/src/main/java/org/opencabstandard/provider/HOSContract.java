@@ -144,6 +144,26 @@ public final class HOSContract {
     public static final String KEY_HOS = "hos";
 
     /**
+     * Key for retrieving the HOS status from the returned {@link android.os.Bundle} object.  If the value is null,
+     * an error occurred and you can then retrieve the error from the {@link android.os.Bundle} using the key
+     * {@link HOSContract}.KEY_ERROR.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *      {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *      {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link HOSContract}.AUTHORITY),
+     *                                  {@link HOSContract}.METHOD_GET_HOS,
+     *                                  {@link HOSContract}.VERSION,
+     *                                  null);
+     *     {@link HOSStatus} status = result.getParelableArrayList({@link HOSContract}.KEY_HOS);
+     * </code>
+     * </pre>
+     */
+    public static final String KEY_TEAM_HOS = "hos_team";
+
+    /**
      * If an error has occurred in one of the provider method calls, use this key to retrieve
      * the error from the Bundle object returned from the provider call method.
      *

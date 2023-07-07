@@ -125,6 +125,8 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
             case IdentityContract.METHOD_GET_LOGIN_CREDENTIALS:
                 IdentityContract.LoginCredentials creds = getLoginCredentials(version);
                 result.putParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS, creds);
+                ArrayList<IdentityContract.DriverSession> driverSessionList = getAllLoginCredentials(version);
+                result.putParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS, driverSessionList);
                 break;
             default:
                 Log.w(LOG_TAG, "Unrecognized method name: " + method);
@@ -141,6 +143,15 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
      * @return The login credentials.
      */
     public abstract IdentityContract.LoginCredentials getLoginCredentials(String version);
+
+    /**
+     * Implement this method to return the login credentials for version 0.3+ .
+     *
+     * @param version The {@link IdentityContract}.VERSION
+     * @return The login credentials.
+     */
+    public abstract ArrayList<IdentityContract.DriverSession> getAllLoginCredentials(String version);
+
 
     /**
      * Implement this method to return a {@link ArrayList} of the current active drivers.

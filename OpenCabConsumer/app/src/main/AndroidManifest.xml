@@ -72,6 +72,7 @@
             <intent-filter>
                 <action android:name="org.opencabstandard.ACTION_DRIVER_LOGIN" />
                 <action android:name="com.opencabstandard.ACTION_DRIVER_LOGOUT" />
+                <action android:name="org.opencabstandard.ACTION_IDENTITY_INFORMATION_CHANGED" />
             </intent-filter>
         </receiver>
 

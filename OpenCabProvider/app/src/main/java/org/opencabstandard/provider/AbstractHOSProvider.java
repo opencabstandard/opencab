@@ -197,6 +197,13 @@ public abstract class AbstractHOSProvider extends ContentProvider {
     protected abstract Boolean endNavigation(String version);
 
     /**
+     * Implement this to enable team driver functionality.
+     *
+     * @return
+     */
+    protected abstract Boolean isTeamDriverEnabled();
+
+    /**
      * Implement this to force a specific {@link HOSContract}.VERSION.
      *
      * @return

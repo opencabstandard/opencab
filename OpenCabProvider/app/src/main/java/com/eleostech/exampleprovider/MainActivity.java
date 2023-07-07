@@ -52,26 +52,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
+        binding.logoutButton.setOnClickListener(v -> logout());
 
-        binding.switchDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchDriver();
-            }
-        });
+        binding.switchDriverButton.setOnClickListener(v -> switchDriver());
 
-        binding.broadcastEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                broadCastEvent();
-            }
-        });
+        binding.broadcastEventButton.setOnClickListener(view1 -> broadCastEvent());
 
         String username = Preferences.getUsername(this);
         if (username != null) {
@@ -100,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
             setDutyStatus("off");
         }
 
-        Spinner spinner = (Spinner) findViewById(R.id.broadcast_event_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.broadcast_events, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.broadcastEventSpinner.setAdapter(adapter);
@@ -116,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
                 Preferences.setHosVersion(getApplicationContext(), binding.hosClocksVersionSpinner.getSelectedItem().toString());
             }
 
-        binding.identityProviderTokenTypeSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                updateIdentityProviderTokenType();
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+        binding.identityProviderTokenTypeSwitch.setOnClickListener(v -> updateIdentityProviderTokenType());
 
         binding.identityProviderTokenTextedit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -140,7 +124,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.sendManageActionSwitch.setOnClickListener(v -> updateSendManageActionSwitch());
+
+        binding.identityProviderTeamDriverSwitch.setOnClickListener(v -> updateIdentityProviderTeamDriver());
         Preferences.setIdentityResponseToken(this, null);
+    }
+
+    private void updateSendManageActionSwitch() {
+        Preferences.setManageAction(this, binding.sendManageActionSwitch.isChecked());
     }
 
     private void saveToken(String text) {
@@ -156,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
             binding.identityProviderTokenTextedit.setVisibility(View.VISIBLE);
         }
     }
-
 
     @Override
     public void onResume() {
@@ -187,14 +177,18 @@ public class MainActivity extends AppCompatActivity {
             for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
                 String key = entry.getKey();
                 ActivityInfo value = entry.getValue();
-                Intent intent = new Intent();
                 // If required by your use case or for security reasons, you can apply any
                 // package name-based filtering by checking `value.packageName` against
                 // a server-provided list. It is not recommended that you hard code any
                 // package names in your mobile implementation directly.
-                intent.setComponent(new ComponentName(value.packageName, key));
-                intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
-                getApplication().sendBroadcast(intent);
+                Intent intent1 = new Intent();
+                intent1.setComponent(new ComponentName(value.packageName, key));
+                intent1.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
+                getApplication().sendBroadcast(intent1);
+                Intent intent2 = new Intent();
+                intent2.setComponent(new ComponentName(value.packageName, key));
+                intent2.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
+                getApplication().sendBroadcast(intent2);
             }
         }
     }
@@ -205,7 +199,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        binding.identityProviderTeamDriverSwitch.setChecked(false);
         Preferences.clear(this);
+
         binding.loginContainer.setVisibility(View.VISIBLE);
         binding.logoutContainer.setVisibility(View.GONE);
 
@@ -252,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(driver);
 
         Preferences.setActiveDrivers(this, drivers);
-
     }
 
     private void broadCastEvent() {
@@ -335,5 +330,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return discoveredReceivers;
+    }
+
+    private HashMap<String, ActivityInfo> getReceivers(String type) {
+        List<PackageInfo> packages = getApplication().getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
+        HashMap<String, ActivityInfo> discoveredReceivers = new HashMap<>();
+        if (packages != null) {
+            for (PackageInfo packageInfo : packages) {
+                if (packageInfo.receivers != null) {
+                    for (ActivityInfo activityInfo : packageInfo.receivers) {
+                        if (activityInfo.name.endsWith("." + type)) {
+                            discoveredReceivers.put(activityInfo.name, activityInfo);
+                        }
+
+                    }
+                }
+            }
+        }
+        return discoveredReceivers;
+    }
+
+    private void updateIdentityProviderTeamDriver() {
+        Preferences.setIdentityProviderTeamDriver(this, binding.identityProviderTeamDriverSwitch.isChecked());
     }
 }

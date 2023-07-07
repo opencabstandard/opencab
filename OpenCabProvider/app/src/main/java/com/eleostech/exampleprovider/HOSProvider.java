@@ -48,6 +48,11 @@ public class HOSProvider extends AbstractHOSProvider {
     }
 
     @Override
+    protected Boolean isTeamDriverEnabled() {
+        return Preferences.isIdentityProviderTeamDriverEnabled(getContext());
+    }
+
+    @Override
     protected String getHosVersion() {
         return Preferences.getHosVersion(getContext());
     }
