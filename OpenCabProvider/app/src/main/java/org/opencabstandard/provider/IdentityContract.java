@@ -40,13 +40,13 @@ public final class IdentityContract {
 
     /**
      * This Action is broadcast when the identity information changes.
-     * <p>
-     * You can subscribe to this event to receive updates indicating the active driver, or information
+     * 
+     * <p>You can subscribe to this event to receive updates indicating the active driver, or information
      * about the active driver (such as their LoginCredentials token) has been updated. To get the updated value,
      * call METHOD_GET_LOGIN_CREDENTIALS after receiving this event.
-     * </p>
+     * 
      *
-     * <p>Providers MUST publish this event when the values returned by <code>METHOD_GET_LOGIN_CREDENTIALS</code> change.<p>
+     * <p>Providers MUST publish this event when the values returned by <code>METHOD_GET_LOGIN_CREDENTIALS</code> change.
      */
     public static final String ACTION_IDENTITY_INFORMATION_CHANGED = "org.opencabstandard.ACTION_IDENTITY_INFORMATION_CHANGED";
 

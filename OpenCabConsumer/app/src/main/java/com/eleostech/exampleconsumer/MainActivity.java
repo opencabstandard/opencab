@@ -29,13 +29,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
     private ActivityMainBinding binding;
-
+    private ArrayAdapter<String> adapterHos;
     private ArrayAdapter<String> adapterBroadcastedEvents;
     private ArrayAdapter<String> adapterVehicleInformation;
     private ArrayAdapter<String> adapterLoginCredentials;
     private ArrayAdapter<String> adapterActiveDrivers;
-
-    private ArrayAdapter<String> adapterHos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +42,15 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        binding.hosButton.setOnClickListener(v -> callHOSProvider());
         binding.vehicleInformationButton.setOnClickListener(v -> callVehicleInformationProvider());
         binding.identityProviderLoginCredentialsButton.setOnClickListener(v -> callIdentityProviderGetLoginCredentials());
         binding.identityActiveDriverButton.setOnClickListener(v -> callIdentityProviderGetActiveDrivers());
-        binding.hosProviderButton.setOnClickListener(v -> callHosProviderGetHos());
 
         EventBus.getDefault().register(this);
+
+        adapterHos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        binding.hosListView.setAdapter(adapterHos);
 
         adapterBroadcastedEvents = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         binding.broadcastListView.setAdapter(adapterBroadcastedEvents);
@@ -97,6 +98,56 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
         String dateTime = s.format(new Date());
         adapterBroadcastedEvents.insert(dateTime + " : " + event, 0);
+    }
+
+
+    private void callHOSProvider() {
+        Log.d(LOG_TAG, "callHOSProvider()");
+        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+        search:
+        for (PackageInfo pkg : packages) {
+            if (pkg.providers != null) {
+                for (ProviderInfo provider : pkg.providers) {
+                    if (provider.authority != null) {
+                        if (provider.authority.endsWith(".org.opencabstandard.hos")) {
+                            ContentResolver resolver = getApplicationContext().getContentResolver();
+                            Uri authority = Uri.parse("content://" + provider.authority);
+                            Bundle result;
+                            SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
+                            String dateTime = s.format(new Date());
+                            try {
+                                result = resolver.call(authority, HOSContract.METHOD_GET_HOS, HOSContract.VERSION, null);
+                            } catch (Exception ex) {
+                                Log.i(LOG_TAG, "Error calling provider: ", ex);
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
+                                return;
+                            }
+
+                            if (result != null) {
+                                Log.d(LOG_TAG, "Got result!");
+                                result.setClassLoader(HOSContract.class.getClassLoader());
+                                if (result.containsKey(HOSContract.KEY_HOS)) {
+                                    HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_HOS);
+                                    if (hosStatus != null) {
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction(), 0);
+                                        for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                        }
+                                    }
+                                } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                    String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                    Log.d(LOG_TAG, "Error: " + error);
+                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                }
+                            } else {
+                                Log.d(LOG_TAG, "Result from provider is null.");
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void callVehicleInformationProvider() {
@@ -235,62 +286,6 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 Log.d(LOG_TAG, "Result from provider is null.");
                                 adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void callHosProviderGetHos() {
-        Log.d(LOG_TAG, "callHosProviderGetHos()");
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
-        search:
-        for (PackageInfo pkg : packages) {
-            if (pkg.providers != null) {
-                for (ProviderInfo provider : pkg.providers) {
-                    if (provider.authority != null) {
-                        if (provider.authority.endsWith(".org.opencabstandard.hos")) {
-                            ContentResolver resolver = getApplicationContext().getContentResolver();
-                            Uri authority = Uri.parse("content://" + provider.authority);
-                            Bundle result;
-                            SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
-                            String dateTime = s.format(new Date());
-                            try {
-                                result = resolver.call(authority, "getHOS", "0.3", null);
-                            } catch (Exception ex) {
-                                Log.i(LOG_TAG, "Error calling provider: ", ex);
-                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
-                                return;
-                            }
-
-                            if (result != null) {
-                                Log.d(LOG_TAG, "Got result!" + result);
-                                result.setClassLoader(HOSContract.class.getClassLoader());
-                                for (String key: result.keySet())
-                                {
-                                    Log.d(LOG_TAG, key + " is a key in the bundle");
-                                }
-                                if (result.containsKey(HOSContract.KEY_HOS)) {
-                                    HOSContract.HOSStatus status = result.getParcelable(HOSContract.KEY_HOS);
-                                    Log.d(LOG_TAG, "Got hos: " + status);
-                                    if (status != null && status.getClocks().size() > 0) {
-                                        for (HOSContract.Clock clock : status.getClocks()) {
-                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
-                                        }
-                                    } else {
-                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No HOS data found", 0);
-
-                                    }
-                                } else if (result.containsKey(HOSContract.KEY_ERROR)) {
-                                    String error = result.getString(HOSContract.KEY_ERROR);
-                                    Log.d(LOG_TAG, "Error: " + error);
-                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
-                                }
-                            } else {
-                                Log.d(LOG_TAG, "Result from provider is null.");
-                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
                             }
                         }
                     }

@@ -16,11 +16,15 @@ public class Preferences {
     public static final String PREFS_NAME = "opencab";
 
     private static final String PREFS_USERNAME = "PREFS_USERNAME";
-    private static final String PREFS_HOS = "PREFS_HOS";
+
+    private static final String PREFS_DUTY_STATUS = "PREFS_DUTY_STATUS";
+
     private static final String PREFS_ACTIVE_DRIVERS = "PREFS_ACTIVE_DRIVERS";
     private static final String PREFS_NAVIGATION_STATE = "PREFS_NAVIGATION_STATE";
     private static final String PREFS_IDENTITY_PROVIDER_SEND_JWT = "PREFS_IDENTITY_PROVIDER_SEND_JWT";
     private static final String PREFS_IDENTITY_PROVIDER_TOKEN = "PREFS_IDENTITY_PROVIDER_TOKEN";
+
+    private static final String PREFS_HOS_VERSION = "PREFS_HOS_VERSION";
 
     public static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -60,12 +64,13 @@ public class Preferences {
         return getString(context, PREFS_USERNAME, null);
     }
 
-    public static void setHOS(Context context, String hos) {
-        putString(context, PREFS_HOS, hos);
+    public static void setDutyStatus(Context context, String dutyStatus) {
+        putString(context, PREFS_DUTY_STATUS, dutyStatus);
     }
 
-    public static String getHOS(Context context) {
-        return getString(context, PREFS_HOS, null);
+
+    public static String getDutyStatus(Context context) {
+        return getString(context, PREFS_DUTY_STATUS, null);
     }
 
     public static void setActiveDrivers(Context context, ArrayList<IdentityContract.Driver> activeDrivers) {
@@ -114,5 +119,15 @@ public class Preferences {
 
     public static String getIdentityResponseToken(Context context) {
         return getPreferences(context).getString(PREFS_IDENTITY_PROVIDER_TOKEN, "");
+    }
+
+    public static void setHosVersion(Context context, String version) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putString(PREFS_HOS_VERSION, version);
+        editor.commit();
+    }
+
+    public static String getHosVersion(Context context) {
+        return getPreferences(context).getString(PREFS_HOS_VERSION, "");
     }
 }

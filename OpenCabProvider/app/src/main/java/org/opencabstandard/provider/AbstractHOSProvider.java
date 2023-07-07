@@ -10,8 +10,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.opencabstandard.provider.HOSContract;
-
 /**
  * An abstract ContentProvider that implements the {@link HOSContract}.  The provider app can choose
  * to implement the full ContentProvider or to extend this class.  If extending this class it only needs
@@ -22,6 +20,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
 
     /**
      * Initialize the provider.
+     *
      * @return Indicates successful initialization.
      */
     @Override
@@ -32,6 +31,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param strings
      * @param s
@@ -47,6 +47,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @return
      */
@@ -58,6 +59,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param contentValues
      * @return
@@ -83,6 +85,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param contentValues
      * @param s
@@ -98,9 +101,9 @@ public abstract class AbstractHOSProvider extends ContentProvider {
      * This method will be called for all interactions with the ContentProvider based on the method argument
      * passed in.  The appropriate abstract method will be called based on the method argument.
      *
-     * @param method The desired method to call.
+     * @param method  The desired method to call.
      * @param version The {@link HOSContract}.VERSION
-     * @param extras Additional data if needed by the method.
+     * @param extras  Additional data if needed by the method.
      * @return {@link Bundle} with results.
      */
     @Nullable
@@ -108,15 +111,24 @@ public abstract class AbstractHOSProvider extends ContentProvider {
     public Bundle call(@NonNull String method, @Nullable String version, @Nullable Bundle extras) {
         Bundle result = new Bundle();
         Log.i(LOG_TAG, "Method name: " + method + ", version: " + version);
-        switch(method) {
+        switch (method) {
             case HOSContract.METHOD_GET_HOS:
-                HOSContract.HOSStatus status = getHOS(version);
-                if(status != null) {
-                    result.putParcelable(HOSContract.KEY_HOS, status);
-                } else{
-                    result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
+                result.putString(HOSContract.KEY_VERSION, getHosVersion());
+                if (getHosVersion().equals("0.2")) {
+                    HOSContract.HOSStatus status = getHOS();
+                    if (status != null) {
+                        result.putParcelable(HOSContract.KEY_HOS, status);
+                    } else {
+                        result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
+                    }
+                } else {
+                    HOSContract.HOSStatusV2 status = getHOSV2();
+                    if (status != null) {
+                        result.putParcelable(HOSContract.KEY_HOS, status);
+                    } else {
+                        result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
+                    }
                 }
-
                 break;
             case HOSContract.METHOD_START_NAVIGATION:
                 boolean startStatus = startNavigation(version);
@@ -135,12 +147,18 @@ public abstract class AbstractHOSProvider extends ContentProvider {
     }
 
     /**
-     * Implement this method to return the current HOS status.
+     * Implement this method to return the current HOS status v2.
      *
-     * @param version The {@link HOSContract}.VERSION
      * @return The current HOS
      */
-    protected abstract HOSContract.HOSStatus getHOS(String version);
+    protected abstract HOSContract.HOSStatus getHOS();
+
+    /**
+     * Implement this method to return the current HOS status v2.
+     *
+     * @return The current HOS
+     */
+    protected abstract HOSContract.HOSStatusV2 getHOSV2();
 
     /**
      * Implement this method to indicate when the app started navigation.
@@ -157,5 +175,12 @@ public abstract class AbstractHOSProvider extends ContentProvider {
      * @return Indicator if the method was successful.
      */
     protected abstract Boolean endNavigation(String version);
+
+    /**
+     * Implement this to force a specific {@link HOSContract}.VERSION.
+     *
+     * @return
+     */
+    protected abstract String getHosVersion();
 
 }

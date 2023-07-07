@@ -23,6 +23,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Initialize the provider.
+     *
      * @return Indicates successful initialization.
      */
     @Override
@@ -33,6 +34,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param strings
      * @param s
@@ -48,6 +50,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @return
      */
@@ -59,6 +62,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param contentValues
      * @return
@@ -71,6 +75,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param s
      * @param strings
@@ -83,6 +88,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
 
     /**
      * Not used.
+     *
      * @param uri
      * @param contentValues
      * @param s
@@ -98,9 +104,9 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
      * This method will be called for all interactions with the ContentProvider based on the method argument
      * passed in.  The appropriate abstract method will be called based on the method argument.
      *
-     * @param method The desired method to call.
+     * @param method  The desired method to call.
      * @param version The {@link IdentityContract}.VERSION
-     * @param extras Additional data if needed by the method.
+     * @param extras  Additional data if needed by the method.
      * @return {@link Bundle} with results.
      */
     @Nullable
@@ -109,7 +115,7 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
         Bundle result = new Bundle();
         Log.i(LOG_TAG, "Method name: " + method + ", version: " + version);
 
-        switch(method) {
+        switch (method) {
             case IdentityContract.METHOD_GET_ACTIVE_DRIVERS:
                 ArrayList<IdentityContract.Driver> drivers = getActiveDrivers(version);
                 int count = (drivers != null) ? drivers.size() : 0;
