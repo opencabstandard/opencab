@@ -3,6 +3,7 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 android {
     compileSdkVersion 33
+    buildToolsVersion "30.0.3"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -14,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.eleostech.exampleconsumer"
+        namespace = "com.eleostech.exampleconsumer"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode Integer.valueOf(System.env.CIRCLE_BUILD_NUM ?: 1)
@@ -35,8 +36,8 @@ android {
             buildTypes {
                 debug {
                     firebaseAppDistribution {
-                        appId="1:421304787052:android:46f9359031bd50ccd97849"
-                        groups="default"
+                        appId = "1:421304787052:android:46f9359031bd50ccd97849"
+                        groups = "default"
                     }
                 }
             }
