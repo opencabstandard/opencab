@@ -57,7 +57,7 @@
              https://docs.opencabstandard.org/org/opencabstandard/provider/package-summary.html.
         -->
         <receiver
-            android:name="VehicleInformationChangedReceiver"
+            android:name=".receiver.VehicleInformationChangedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -66,7 +66,7 @@
         </receiver>
 
         <receiver
-            android:name="IdentityChangedReceiver"
+            android:name=".receiver.IdentityChangedReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

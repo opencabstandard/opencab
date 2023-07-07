@@ -27,6 +27,11 @@ public final class IdentityContract {
     public static final String AUTHORITY = "org.opencabstandard.identity";
 
     /**
+     * This is the name of the receiver class. Application will be looking for classes with this name when it tries to broadcast an event.
+     */
+    public static final String IDENTITY_CHANGED_RECEIVER = "IdentityChangedReceiver";
+
+    /**
      * This Action is broadcast when the driver logs out of the OpenCab provider app. Providers MUST publish this
      * event when a user (either a team driver or the last primary user) logs out of the app. This event
      * SHOULD correspond to a change in the result of <code>METHOD_GET_ACTIVE_DRIVERS</code>

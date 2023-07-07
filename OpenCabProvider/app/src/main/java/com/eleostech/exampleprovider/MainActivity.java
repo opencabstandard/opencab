@@ -43,15 +43,12 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.vehicleInformationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = binding.username.getText().toString();
-                if (username != null && username.length() > 0) {
-                    login(username);
-                } else {
-                    Toast.makeText(MainActivity.this, "Please enter username.", Toast.LENGTH_LONG).show();
-                }
+        binding.vehicleInformationButton.setOnClickListener(v -> {
+            String username = binding.username.getText().toString();
+            if (username != null && username.length() > 0) {
+                login(username);
+            } else {
+                Toast.makeText(MainActivity.this, "Please enter username.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -184,21 +181,20 @@ public class MainActivity extends AppCompatActivity {
         setDutyStatus("off");
         addUser(username, false);
 
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
-        search:
-        for (PackageInfo pkg : packages) {
-            if (pkg.receivers != null) {
-                for (ActivityInfo activityInfo : pkg.receivers) {
-                    if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                        String packageName = pkg.packageName;
-                        String className = activityInfo.name;
-                        Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                        Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(packageName, className));
-                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
-                        getApplication().sendBroadcast(intent);
-                    }
-                }
+        HashMap<String, ActivityInfo> discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+
+        if (discoveredReceivers != null) {
+            for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                String key = entry.getKey();
+                ActivityInfo value = entry.getValue();
+                Intent intent = new Intent();
+                // If required by your use case or for security reasons, you can apply any
+                // package name-based filtering by checking `value.packageName` against
+                // a server-provided list. It is not recommended that you hard code any
+                // package names in your mobile implementation directly.
+                intent.setComponent(new ComponentName(value.packageName, key));
+                intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
+                getApplication().sendBroadcast(intent);
             }
         }
     }
@@ -212,21 +208,17 @@ public class MainActivity extends AppCompatActivity {
         Preferences.clear(this);
         binding.loginContainer.setVisibility(View.VISIBLE);
         binding.logoutContainer.setVisibility(View.GONE);
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
-        search:
-        for (PackageInfo pkg : packages) {
-            if (pkg.receivers != null) {
-                for (ActivityInfo activityInfo : pkg.receivers) {
-                    if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                        String packageName = pkg.packageName;
-                        String className = activityInfo.name;
-                        Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                        Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(packageName, className));
-                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
-                        getApplication().sendBroadcast(intent);
-                    }
-                }
+
+        HashMap<String, ActivityInfo> discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+
+        if (discoveredReceivers != null) {
+            for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                String key = entry.getKey();
+                ActivityInfo value = entry.getValue();
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(value.packageName, key));
+                intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
+                getApplication().sendBroadcast(intent);
             }
         }
     }
@@ -266,78 +258,82 @@ public class MainActivity extends AppCompatActivity {
     private void broadCastEvent() {
         String event = binding.broadcastEventSpinner.getSelectedItem().toString();
         Log.d(LOG_TAG, "Broadcasting " + event + " event");
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
+        HashMap<String, ActivityInfo> discoveredReceivers;
         switch (event) {
             case "ACTION_DRIVER_LOGOUT":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_DRIVER_LOGIN":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_IDENTITY_INFORMATION_CHANGED":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_VEHICLE_INFORMATION_CHANGED":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".VehicleInformationChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(VehicleInformationContract.VEHICLE_INFORMATION_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             default:
                 // code block
         }
+
+
+    }
+
+    private HashMap<String, ActivityInfo> getReceivers(String type) {
+        List<PackageInfo> packages = getApplication().getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
+        HashMap<String, ActivityInfo> discoveredReceivers = new HashMap<>();
+        if (packages != null) {
+            for (PackageInfo packageInfo : packages) {
+                if (packageInfo.receivers != null) {
+                    for (ActivityInfo activityInfo : packageInfo.receivers) {
+                        if (activityInfo.name.endsWith("." + type)) {
+                            discoveredReceivers.put(activityInfo.name, activityInfo);
+                        }
+
+                    }
+                }
+            }
+        }
+        return discoveredReceivers;
     }
 }

@@ -50,6 +50,11 @@ public final class VehicleInformationContract {
     public static final String AUTHORITY = "org.opencabstandard.vehicleinformation";
 
     /**
+     * This is the name of the receiver class. Application will be looking for classes with this name when it tries to broadcast an event.
+     */
+    public static final String VEHICLE_INFORMATION_CHANGED_RECEIVER = "VehicleInformationChangedReceiver";
+
+    /**
      * This Action is broadcast when the vehicle information changes, perhaps because the driver
      * chooses to associate with another vehicle, or if the device removed from a vehicle in a
      * slip-seat scenario.
