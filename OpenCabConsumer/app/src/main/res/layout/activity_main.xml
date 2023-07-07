@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
+    <LinearLayout
+        android:id="@+id/login_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="false"
+        android:orientation="vertical">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -12,8 +19,30 @@
             android:id="@+id/login_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="false"
-            android:orientation="vertical">
+            android:text="Click the button to fetch HOS information."
+            android:textSize="10dp" />
+
+        <Button
+            android:id="@+id/hos_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:text="Call Provider" />
+
+        <ListView
+            android:id="@+id/hosListView"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:background="@color/colorAccent"
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:fadingEdge="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click the button to fetch vehicle information."
+            android:textSize="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
