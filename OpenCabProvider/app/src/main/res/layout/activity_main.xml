@@ -152,6 +152,21 @@
             android:layout_marginEnd="6dp"
             android:text="Enter token here" />
 
+        <TextView
+            android:id="@+id/hos_clocks_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:text="Force HOS Version"
+            android:textSize="16dp" />
+
+        <Spinner
+            android:id="@+id/hos_clocks_version_spinner"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
     </LinearLayout>
 
     <TextView

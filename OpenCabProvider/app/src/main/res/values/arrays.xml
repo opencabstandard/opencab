@@ -6,4 +6,8 @@
         <item>ACTION_DRIVER_LOGOUT</item>
         <item>ACTION_VEHICLE_INFORMATION_CHANGED</item>
     </string-array>
+    <string-array name="hos_versions">
+        <item>0.3</item>
+        <item>0.2</item>
+    </string-array>
 </resources>

@@ -10,8 +10,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,15 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.eleostech.opencabprovider.R;
 import com.eleostech.opencabprovider.databinding.ActivityMainBinding;
 
-import org.opencabstandard.provider.HOSContract;
 import org.opencabstandard.provider.IdentityContract;
 import org.opencabstandard.provider.VehicleInformationContract;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
@@ -38,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (Preferences.getDutyStatus(this) == null) {
+            Preferences.setDutyStatus(this, "off");
+        }
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -85,54 +86,19 @@ public class MainActivity extends AppCompatActivity {
             binding.logoutContainer.setVisibility(View.GONE);
         }
 
-        binding.statusDriving.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("driving");
-            }
-        });
+        binding.statusDriving.setOnClickListener(v -> setDutyStatus("d"));
 
-        binding.statusOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("on");
-            }
-        });
+        binding.statusOn.setOnClickListener(v -> setDutyStatus("on"));
 
-        binding.statusOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("off");
-            }
-        });
+        binding.statusOff.setOnClickListener(v -> setDutyStatus("off"));
 
-        if (Preferences.getHOS(this) != null) {
-            String status = null;
-            String json = Preferences.getHOS(this);
+        if (Preferences.getDutyStatus(this) != null) {
+            String status;
+            status = Preferences.getDutyStatus(this);
 
-            HOSContract.HOSStatus hstatus = HOSProvider.createGson().fromJson(json, HOSContract.HOSStatus.class);
-            List<HOSContract.Clock> clocks = hstatus.getClocks();
-
-            for (HOSContract.Clock cl : clocks) {
-                if (cl.getLabel().equals("Duty Status")) {
-                    status = cl.getValue();
-                    break;
-                }
-            }
+            setDutyStatus(status);
 
             Log.d(LOG_TAG, "Found status: " + status);
-            switch (status) {
-                case "D":
-                    binding.statusDriving.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-                case "ON":
-                    binding.statusOn.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-                case "OFF":
-                    binding.statusOff.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-
-            }
         } else {
             setDutyStatus("off");
         }
@@ -140,7 +106,18 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinner = (Spinner) findViewById(R.id.broadcast_event_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.broadcast_events, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        binding.broadcastEventSpinner.setAdapter(adapter);
+
+
+        ArrayAdapter<CharSequence> adapterHosVersion = ArrayAdapter.createFromResource(this, R.array.hos_versions, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.hosClocksVersionSpinner.setAdapter(adapterHosVersion);
+
+        binding.hosClocksVersionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Preferences.setHosVersion(getApplicationContext(), binding.hosClocksVersionSpinner.getSelectedItem().toString());
+            }
 
         binding.identityProviderTokenTypeSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             binding.navigationState.setText("NAVIGATING: FALSE");
         }
+        Preferences.setHosVersion(this, binding.hosClocksVersionSpinner.getSelectedItem().toString());
     }
 
     private void login(final String username) {
@@ -258,74 +236,19 @@ public class MainActivity extends AppCompatActivity {
         binding.statusDriving.setBackgroundColor(getColor(R.color.status_inactive));
         binding.statusOn.setBackgroundColor(getColor(R.color.status_inactive));
         binding.statusOff.setBackgroundColor(getColor(R.color.status_inactive));
-
-        String duty = null;
-        Date date = null;
-        String label = null;
-        boolean limit = false;
         switch (status) {
-            case "driving":
+            case "d":
                 binding.statusDriving.setBackgroundColor(getColor(R.color.status_active));
-                duty = "D";
-                date = addHoursToDate(new Date(), 12);
-                label = "Drive Time Remaining";
-                limit = true;
                 break;
             case "on":
                 binding.statusOn.setBackgroundColor(getColor(R.color.status_active));
-                duty = "ON";
-                date = addHoursToDate(new Date(), 8);
-                label = "On Duty Time Remaining";
                 break;
             case "off":
                 binding.statusOff.setBackgroundColor(getColor(R.color.status_active));
-                duty = "OFF";
-                date = new Date();
-                label = "Rest Time Remaining";
                 break;
+
         }
-
-        ArrayList<HOSContract.Clock> clocks = new ArrayList<>();
-        HOSContract.Clock item1 = new HOSContract.Clock();
-        item1.setLabel("Duty Status");
-        item1.setValueType(HOSContract.Clock.ValueType.STRING);
-        item1.setValue(duty);
-        clocks.add(item1);
-        HOSContract.Clock item2 = new HOSContract.Clock();
-        item2.setLabel(label);
-        item2.setValueType(HOSContract.Clock.ValueType.COUNTDOWN);
-        item2.setLimitsDrivingRange(limit);
-
-        SimpleDateFormat format = new SimpleDateFormat(HOSProvider.DATE_FORMAT);
-        item2.setValue(format.format(date));
-        clocks.add(item2);
-
-        String username = Preferences.getUsername(this);
-        HOSContract.Clock item3 = new HOSContract.Clock();
-        item3.setLabel("User");
-        item3.setValueType(HOSContract.Clock.ValueType.STRING);
-        item3.setValue(username);
-        clocks.add(item3);
-
-        HOSContract.Clock item4 = new HOSContract.Clock();
-        item4.setLabel("Time since Rest");
-        item4.setValueType(HOSContract.Clock.ValueType.COUNTUP);
-        item4.setValue(format.format(new Date()));
-        clocks.add(item4);
-
-        HOSContract.HOSStatus hosStatus = new HOSContract.HOSStatus();
-        hosStatus.setClocks(clocks);
-        hosStatus.setManageAction("hos://com.eleostech.opencabprovider/hos");
-
-        String json = HOSProvider.createGson().toJson(hosStatus);
-        Preferences.setHOS(this, json);
-    }
-
-    private Date addHoursToDate(Date date, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, hours);
-        return calendar.getTime();
+        Preferences.setDutyStatus(this, status);
     }
 
     private void addUser(String username, boolean driving) {
