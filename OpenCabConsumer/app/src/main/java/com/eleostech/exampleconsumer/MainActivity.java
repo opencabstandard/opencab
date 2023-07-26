@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapterLoginCredentials;
     private ArrayAdapter<String> adapterActiveDrivers;
 
-    private ArrayAdapter<String> adapterHos;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
         binding.vehicleInformationButton.setOnClickListener(v -> callVehicleInformationProvider());
         binding.identityProviderLoginCredentialsButton.setOnClickListener(v -> callIdentityProviderGetLoginCredentials());
         binding.identityActiveDriverButton.setOnClickListener(v -> callIdentityProviderGetActiveDrivers());
-        binding.hosProviderButton.setOnClickListener(v -> callHosProviderGetHos());
-
         EventBus.getDefault().register(this);
 
         adapterHos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
@@ -67,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         adapterActiveDrivers = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         binding.activeDriversListView.setAdapter(adapterActiveDrivers);
-
-        adapterHos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
-        binding.hosListView.setAdapter(adapterHos);
     }
 
     @Override
