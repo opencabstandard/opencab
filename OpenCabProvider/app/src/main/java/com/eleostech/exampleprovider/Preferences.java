@@ -151,6 +151,6 @@ public class Preferences {
     }
 
     public static String getHosVersion(Context context) {
-        return getPreferences(context).getString(PREFS_HOS_VERSION, "");
+        return getPreferences(context).getString(PREFS_HOS_VERSION, null);
     }
 }

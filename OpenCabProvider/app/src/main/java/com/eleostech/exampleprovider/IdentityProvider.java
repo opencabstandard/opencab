@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.opencabstandard.provider.AbstractIdentityProvider;
 import org.opencabstandard.provider.IdentityContract;
+import org.opencabstandard.provider.Version;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,13 +111,13 @@ public class IdentityProvider extends AbstractIdentityProvider {
 
     @Override
     public ArrayList<IdentityContract.Driver> getActiveDrivers(String version) {
-        Log.d(LOG_TAG, "getActiveDrivers()");
+        Log.d(LOG_TAG, "getActiveDrivers() for version " + version);
         ArrayList<IdentityContract.Driver> activeDrivers = Preferences.getActiveDrivers(getContext());
-        //Team driver support is only available on >= 0.3 versions
-        if (version != null && Double.valueOf(version) > 0.2) {
-            if (activeDrivers != null) {
-                if (Preferences.isIdentityProviderTeamDriverEnabled(getContext())) {
-                    //we should add team driver information here
+        if (Preferences.isIdentityProviderTeamDriverEnabled(getContext())) {
+            Version requestedVersion = new Version(version != null ? version : "0.2");
+            Version supportedVersion = new Version("0.3");
+            if (requestedVersion.compareTo(supportedVersion) >= 0) {
+                if (activeDrivers != null) {
                     IdentityContract.Driver teamDriver = new IdentityContract.Driver();
                     teamDriver.setDriving(false);
                     teamDriver.setUsername("OPENCAB-TEAM-DRIVER");

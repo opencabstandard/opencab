@@ -114,7 +114,11 @@ public abstract class AbstractHOSProvider extends ContentProvider {
         switch (method) {
             case HOSContract.METHOD_GET_HOS:
                 result.putString(HOSContract.KEY_VERSION, getHosVersion());
-                if (getHosVersion().equals("0.2")) {
+                Version requestedVersion = new Version(getHosVersion() != null ? getHosVersion() : "0.2");
+                Version supportedVersionV2 = new Version("0.2");
+                Version supportedVersionV3 = new Version("0.3");
+                Log.i(LOG_TAG, "requested version: " + requestedVersion + ", supported version: " + supportedVersionV2);
+                if (requestedVersion.compareTo(supportedVersionV2) == 0) {
                     HOSContract.HOSStatus status = getHOS();
                     if (status != null) {
                         result.putParcelable(HOSContract.KEY_HOS, status);
@@ -124,7 +128,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
                     }
-                } else {
+                } else if (requestedVersion.compareTo(supportedVersionV3) >= 0) {
                     HOSContract.HOSStatusV2 status = getHOSV2();
                     if (status != null) {
                         result.putParcelable(HOSContract.KEY_HOS, status);

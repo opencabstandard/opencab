@@ -125,8 +125,13 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
             case IdentityContract.METHOD_GET_LOGIN_CREDENTIALS:
                 IdentityContract.LoginCredentials creds = getLoginCredentials(version);
                 result.putParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS, creds);
-                ArrayList<IdentityContract.DriverSession> driverSessionList = getAllLoginCredentials(version);
-                result.putParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS, driverSessionList);
+                Version requestedVersion = new Version(version != null ? version : "0.2");
+                Version supportedVersion = new Version("0.3");
+                Log.i(LOG_TAG, "requested version: " + requestedVersion + ", supported version: " + supportedVersion);
+                if (requestedVersion.compareTo(supportedVersion) >= 0) {
+                    ArrayList<IdentityContract.DriverSession> driverSessionList = getAllLoginCredentials(version);
+                    result.putParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS, driverSessionList);
+                }
                 break;
             default:
                 Log.w(LOG_TAG, "Unrecognized method name: " + method);

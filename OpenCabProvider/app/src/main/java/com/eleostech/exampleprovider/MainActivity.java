@@ -310,26 +310,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 // code block
         }
-
-
-    }
-
-    private HashMap<String, ActivityInfo> getReceivers(String type) {
-        List<PackageInfo> packages = getApplication().getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
-        HashMap<String, ActivityInfo> discoveredReceivers = new HashMap<>();
-        if (packages != null) {
-            for (PackageInfo packageInfo : packages) {
-                if (packageInfo.receivers != null) {
-                    for (ActivityInfo activityInfo : packageInfo.receivers) {
-                        if (activityInfo.name.endsWith("." + type)) {
-                            discoveredReceivers.put(activityInfo.name, activityInfo);
-                        }
-
-                    }
-                }
-            }
-        }
-        return discoveredReceivers;
     }
 
     private HashMap<String, ActivityInfo> getReceivers(String type) {
