@@ -2,8 +2,9 @@
 set -ex
 
 # Test with: docker run --rm -it amazonlinux:2.0.20191217.0 sh
-yum install wget unzip java-11-openjdk-devel
+yum install wget unzip
 amazon-linux-extras install java-openjdk11
+yum install java-11-openjdk-devel
 
 wget --quiet -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
 unzip android.zip
