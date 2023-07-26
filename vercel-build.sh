@@ -15,4 +15,4 @@ export JAVA_HOME=$(echo /usr/lib/jvm/java-11-openjdk-11*)
 cmdline-tools/bin/sdkmanager --sdk_root=android-sdk/ "platform-tools" "platforms;android-28"
 
 cd OpenCabProvider
-ANDROID_SDK_ROOT=../android-sdk/ ./build-docs.sh
+ANDROID_SDK_ROOT=../android-sdk/ ./build-docs.sh 2>&1

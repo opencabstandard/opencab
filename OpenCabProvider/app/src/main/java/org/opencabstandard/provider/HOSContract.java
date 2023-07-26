@@ -407,7 +407,7 @@ public final class HOSContract {
      * old consumers will not be able to parse the new version 0.3 clock structure if returned.
      *
      * <b>For new integrations, providers SHOULD return a {@link ClockV2} instead if the consumer indicates
-     * that it's supported.<b>
+     * that it's supported.</b>
      *
      * <p>
      * An example of the different types of clocks is shown in the image below:
