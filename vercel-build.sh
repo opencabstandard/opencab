@@ -14,5 +14,6 @@ printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > android-sdk/licenses/andro
 export JAVA_HOME=$(echo /usr/lib/jvm/java-11-openjdk-11*)
 cmdline-tools/bin/sdkmanager --sdk_root=android-sdk/ "platform-tools" "platforms;android-28"
 
+export LANG=en_US.UTF-8
 cd OpenCabProvider
-ANDROID_SDK_ROOT=../android-sdk/ ./build-docs.sh 2>&1
+ANDROID_SDK_ROOT=../android-sdk/ ./build-docs.sh
