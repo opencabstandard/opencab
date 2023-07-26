@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
-import org.opencabstandard.provider.AbstractHOSProvider;
+
 /**
  * Defines the contract for the OpenCab HOS Content provider.  An OpenCab HOS provider app should define
  * an Android {@link android.content.ContentProvider} class that follows this contract or should extend
@@ -421,7 +421,6 @@ public final class HOSContract {
         private ValueType valueType;
         private boolean important;
         private boolean limitsDrivingRange;
-        private Double durationSeconds;
 
         /**
          * Allowed types for valueType field.
@@ -567,24 +566,6 @@ public final class HOSContract {
             return limitsDrivingRange;
         }
 
-        /**
-         * Get the duration seconds
-         *
-         * @return The duration seconds for the clock.
-         */
-        public Double getDurationSeconds() {
-            return durationSeconds;
-        }
-
-        /**
-         * The duration seconds for the clock.
-         *
-         * @param durationSeconds The duration seconds for the clock.
-         */
-        public void setDurationSeconds(Double durationSeconds) {
-            this.durationSeconds = durationSeconds;
-        }
-
         @Override
         public int describeContents() {
             return 0;
@@ -597,7 +578,6 @@ public final class HOSContract {
             dest.writeString(valueType.name());
             dest.writeValue(important);
             dest.writeValue(limitsDrivingRange);
-            dest.writeValue(durationSeconds);
         }
 
         private Clock(Parcel in) {
@@ -606,7 +586,6 @@ public final class HOSContract {
             valueType = ValueType.valueOf(in.readString());
             important = (Boolean) in.readValue(Boolean.class.getClassLoader());
             limitsDrivingRange = (Boolean) in.readValue(Boolean.class.getClassLoader());
-            durationSeconds = (Double) in.readValue(Double.class.getClassLoader());
         }
 
         public static Creator<Clock> CREATOR = new Creator<Clock>() {
