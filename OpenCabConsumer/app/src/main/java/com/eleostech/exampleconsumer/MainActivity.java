@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                                 } else if (result.containsKey(HOSContract.KEY_HOS)) {
                                     HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_HOS);
                                     if (hosStatus != null) {
-                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction(), 0);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
                                         for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
                                             adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
                                         }
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                                 result.setClassLoader(VehicleInformationContract.class.getClassLoader());
                                 if (result.containsKey(VehicleInformationContract.KEY_VEHICLE_INFORMATION)) {
                                     VehicleInformationContract.VehicleInformation vinfo = result.getParcelable(VehicleInformationContract.KEY_VEHICLE_INFORMATION);
-                                    adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", VIN: " + vinfo.getVin() + ", Vehicle ID: " + vinfo.getVehicleId() + ", InGear: " + vinfo.isInGear(), 0);
+                                    adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", VIN: " + vinfo.getVin() + ", Vehicle ID: " + vinfo.getVehicleId() + ", InGear: " + vinfo.isInGear() + ", KEY_VERSION: " + (result.containsKey(VehicleInformationContract.KEY_VERSION) ? result.getString(VehicleInformationContract.KEY_VERSION) : "null"), 0);
                                 } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
                                     String error = result.getString(VehicleInformationContract.KEY_ERROR);
                                     Log.d(LOG_TAG, "Error: " + error);
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (result.containsKey(IdentityContract.KEY_LOGIN_CREDENTIALS)) {
                                         IdentityContract.LoginCredentials loginCredentials = result.getParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS);
                                         Log.d(LOG_TAG, "Found login credentials: " + loginCredentials);
-                                        adapterLoginCredentials.insert(dateTime + " : " + "KEY_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Token: " + (loginCredentials != null ? loginCredentials.getToken() : "null") + ", Authority: " + (loginCredentials != null ? loginCredentials.getAuthority() : "null") + ", Provider: " + (loginCredentials != null ? loginCredentials.getProvider() : "null"), 0);
+                                        adapterLoginCredentials.insert(dateTime + " : " + "KEY_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Token: " + (loginCredentials != null ? loginCredentials.getToken() : "null") + ", Authority: " + (loginCredentials != null ? loginCredentials.getAuthority() : "null") + ", Provider: " + (loginCredentials != null ? loginCredentials.getProvider() : "null") + ", KEY_VERSION: " + (result.containsKey(IdentityContract.KEY_VERSION) ? result.getString(IdentityContract.KEY_VERSION) : "null"), 0);
                                     }
                                     if (result.containsKey(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS)) {
                                         ArrayList<IdentityContract.DriverSession> driverSessionArrayList = result.getParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS);

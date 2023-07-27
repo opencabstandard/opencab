@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An abstract ContentProvider that implements the {@link IdentityContract}. The provider app can choose
@@ -121,16 +120,22 @@ public abstract class AbstractIdentityProvider extends ContentProvider {
                 int count = (drivers != null) ? drivers.size() : 0;
                 Log.d(LOG_TAG, "Found active drivers: " + count);
                 result.putParcelableArrayList(IdentityContract.KEY_ACTIVE_DRIVERS, drivers);
+                result.putString(IdentityContract.KEY_VERSION, "0.2");
                 break;
             case IdentityContract.METHOD_GET_LOGIN_CREDENTIALS:
                 IdentityContract.LoginCredentials creds = getLoginCredentials(version);
                 result.putParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS, creds);
-                Version requestedVersion = new Version(version != null ? version : "0.2");
-                Version supportedVersion = new Version("0.3");
-                Log.i(LOG_TAG, "requested version: " + requestedVersion + ", supported version: " + supportedVersion);
-                if (requestedVersion.compareTo(supportedVersion) >= 0) {
+                Version callerVersion = new Version(version != null ? version : "0.2");
+                Version minSupportedVersion = new Version("0.3");
+                // With only KEY_LOGIN_CREDENTIALS, this response is compliant with version 0.2
+                // of the contract.
+                result.putString(IdentityContract.KEY_VERSION, "0.2");
+                if (callerVersion.compareTo(minSupportedVersion) >= 0) {
                     ArrayList<IdentityContract.DriverSession> driverSessionList = getAllLoginCredentials(version);
                     result.putParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS, driverSessionList);
+                    // With the addition of the KEY_ALL_LOGIN_CREDENTIALS info, this response is compliant
+                    // with version 0.3 of the contract.
+                    result.putString(IdentityContract.KEY_VERSION, "0.3");
                 }
                 break;
             default:

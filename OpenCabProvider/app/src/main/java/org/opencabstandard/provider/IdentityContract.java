@@ -1,5 +1,6 @@
 package org.opencabstandard.provider;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -184,6 +185,25 @@ public final class IdentityContract {
      */
     public static final String KEY_ERROR = "error";
 
+    /**
+     * For the methods {@link IdentityContract}.METHOD_GET_LOGIN_CREDENTIALS and {@link IdentityContract}.METHOD_GET_ACTIVE_DRIVERS,
+     * the returned {@link android.os.Bundle} object will contain this key which maps to String indicating
+     * contract version supported.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *     {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *     {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link HOSContract}.AUTHORITY),
+     *                                  {@link IdentityContract}.METHOD_GET_LOGIN_CREDENTIALS,
+     *                                  {@link IdentityContract}.VERSION,
+     *                                  null);
+     *     String version = result.getBoolean({@link IdentityContract}.KEY_VERSION);
+     * </code>
+     * </pre>
+     */
+    public static final String KEY_VERSION = "key_version";
 
     public IdentityContract() {
 

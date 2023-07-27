@@ -203,7 +203,7 @@ public final class HOSContract {
     /**
      * For the methods {@link HOSContract}.METHOD_GET_HOS,
      * the returned {@link android.os.Bundle} object will contain this key which maps to String indicating
-     * HOS Closck version supported.
+     * HOS Clocks version supported.
      *
      * <p>
      * Example:

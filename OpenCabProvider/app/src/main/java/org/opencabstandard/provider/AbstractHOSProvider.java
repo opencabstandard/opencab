@@ -125,6 +125,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                         if (isTeamDriverEnabled()) {
                             result.putParcelable(HOSContract.KEY_TEAM_HOS, getTeamHOS());
                         }
+                        result.putString(HOSContract.KEY_VERSION, "0.2");
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
                     }
@@ -135,6 +136,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                         if (isTeamDriverEnabled()) {
                             result.putParcelable(HOSContract.KEY_TEAM_HOS, getTeamHOSV2());
                         }
+                        result.putString(HOSContract.KEY_VERSION, "0.3");
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
                     }
