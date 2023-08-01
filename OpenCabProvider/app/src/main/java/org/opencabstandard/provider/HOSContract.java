@@ -163,7 +163,7 @@ public final class HOSContract {
      *                                  {@link HOSContract}.METHOD_GET_HOS,
      *                                  {@link HOSContract}.VERSION,
      *                                  null);
-     *     {@link HOSStatus} status = result.getParelableArrayList({@link HOSContract}.KEY_HOS);
+     *     {@link HOSStatusV2} status = result.getParelable({@link HOSContract}.KEY_HOS);
      * </code>
      * </pre>
      */
@@ -174,6 +174,9 @@ public final class HOSContract {
      * an error occurred and you can then retrieve the error from the {@link android.os.Bundle} using the key
      * {@link HOSContract}.KEY_ERROR.
      *
+     * <p>This property will contain an array of {@link HOSStatusV2} parceled objects, each representing the HOS
+     * status and clocks for a different driver.</p>
+     *
      * <p>
      * Example:
      * <pre>
@@ -183,7 +186,7 @@ public final class HOSContract {
      *                                  {@link HOSContract}.METHOD_GET_HOS,
      *                                  {@link HOSContract}.VERSION,
      *                                  null);
-     *     {@link HOSStatus} status = result.getParelableArrayList({@link HOSContract}.KEY_HOS);
+     *     {@link java.util.ArrayList}&lt;{@link HOSStatusV2}&gt; status = result.getParelableArrayList({@link HOSContract}.KEY_TEAM_HOS);
      * </code>
      * </pre>
      */
