@@ -257,7 +257,7 @@ public final class HOSContract {
         /**
          * A URI string to launch the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @param manageAction The URI string
          */
@@ -268,7 +268,7 @@ public final class HOSContract {
         /**
          * A URI string used to launch the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @return The URI string
          */
@@ -340,7 +340,7 @@ public final class HOSContract {
         /**
          * A URI string to launch the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @param manageAction The URI string
          */
@@ -351,7 +351,7 @@ public final class HOSContract {
         /**
          * A URI string used to launch the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @return The URI string
          */
@@ -362,7 +362,7 @@ public final class HOSContract {
         /**
          * A URI string to launch logout on the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @param logoutAction The URI string
          */
@@ -373,7 +373,7 @@ public final class HOSContract {
         /**
          * A URI string to launch logout on the OpenCab HOS provider app.
          *
-         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
          *
          * @return The URI string
          */
@@ -617,7 +617,7 @@ public final class HOSContract {
      * value can be one of the types defined in the {@link ValueType} enum.
      *
      * Providers MUST NOT return this data type to a consumer if the consumer has not explicitly signaled support
-     * for at least version 0.3 by passing <pre>"0.3"</pre> to the version parameter of {@link ContentProvider.call}.
+     * for at least version 0.3 by passing <pre>"0.3"</pre> to the version parameter of {@link android.content.ContentProvider#call}.
      *
      * <p>
      * An example of the different types of clocks is shown in the image below:
