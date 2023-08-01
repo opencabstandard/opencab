@@ -122,9 +122,6 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                     HOSContract.HOSStatus status = getHOS();
                     if (status != null) {
                         result.putParcelable(HOSContract.KEY_HOS, status);
-                        if (isTeamDriverEnabled()) {
-                            result.putParcelable(HOSContract.KEY_TEAM_HOS, getTeamHOS());
-                        }
                         result.putString(HOSContract.KEY_VERSION, "0.2");
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
