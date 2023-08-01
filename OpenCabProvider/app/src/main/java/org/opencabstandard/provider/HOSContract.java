@@ -245,27 +245,22 @@ public final class HOSContract {
         }
 
         /**
-         * The list of current HOS clocks for the driver.
+         * A URI string to launch the OpenCab HOS provider app.
          *
-         * @param clocks The HOS clocks
-         */
-        public void setClocks(List<Clock> clocks) {
-            this.clocks = clocks;
-        }
-
-        /**
-         * An intent string to launch the OpenCab HOS provider app.
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
          *
-         * @param manageAction The intent string
+         * @param manageAction The URI string
          */
         public void setManageAction(String manageAction) {
             this.manageAction = manageAction;
         }
 
         /**
-         * An intent string to launch the OpenCab HOS provider app.
+         * A URI string used to launch the OpenCab HOS provider app.
          *
-         * @return The intent string
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         *
+         * @return The URI string
          */
         public String getManageAction() {
             return manageAction;
@@ -333,36 +328,44 @@ public final class HOSContract {
         }
 
         /**
-         * An intent string to launch the OpenCab HOS provider app.
+         * A URI string to launch the OpenCab HOS provider app.
          *
-         * @param manageAction The intent string
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         *
+         * @param manageAction The URI string
          */
         public void setManageAction(String manageAction) {
             this.manageAction = manageAction;
         }
 
         /**
-         * An intent string to launch the OpenCab HOS provider app.
+         * A URI string used to launch the OpenCab HOS provider app.
          *
-         * @return The intent string
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         *
+         * @return The URI string
          */
         public String getManageAction() {
             return manageAction;
         }
 
         /**
-         * An intent string to launch logout on the OpenCab HOS provider app.
+         * A URI string to launch logout on the OpenCab HOS provider app.
          *
-         * @param logoutAction The intent string
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         *
+         * @param logoutAction The URI string
          */
         public void setLogoutAction(String logoutAction) {
             this.logoutAction = logoutAction;
         }
 
         /**
-         * An intent string to launch logout on the OpenCab HOS provider app.
+         * A URI string to launch logout on the OpenCab HOS provider app.
          *
-         * @return The intent string
+         * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
+         *
+         * @return The URI string
          */
         public String getLogoutAction() {
             return logoutAction;
