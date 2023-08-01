@@ -147,10 +147,14 @@ public class MainActivity extends AppCompatActivity {
                                     adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
                                 }
                                 if (result.containsKey(HOSContract.KEY_TEAM_HOS)) {
-                                    HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_TEAM_HOS);
-                                    if (hosStatus != null && hosStatus.getClocks() != null) {
-                                        for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
-                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                    ArrayList<HOSContract.HOSStatusV2> hosStatusList = result.getParcelableArrayList(HOSContract.KEY_TEAM_HOS);
+                                    if (hosStatusList != null && hosStatusList.size() > 0) {
+                                        for (HOSContract.HOSStatusV2 item : hosStatusList) {
+                                            if (item.getClocks() != null) {
+                                                for (HOSContract.ClockV2 clock : item.getClocks()) {
+                                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                                }
+                                            }
                                         }
                                     }
                                 } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {

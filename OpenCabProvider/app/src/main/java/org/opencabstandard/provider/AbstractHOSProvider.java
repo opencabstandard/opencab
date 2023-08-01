@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 /**
  * An abstract ContentProvider that implements the {@link HOSContract}.  The provider app can choose
  * to implement the full ContentProvider or to extend this class.  If extending this class it only needs
@@ -131,7 +133,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                     if (status != null) {
                         result.putParcelable(HOSContract.KEY_HOS, status);
                         if (isTeamDriverEnabled()) {
-                            result.putParcelable(HOSContract.KEY_TEAM_HOS, getTeamHOSV2());
+                            result.putParcelableArrayList(HOSContract.KEY_TEAM_HOS, getTeamHOSV2());
                         }
                         result.putString(HOSContract.KEY_VERSION, "0.3");
                     } else {
@@ -170,18 +172,11 @@ public abstract class AbstractHOSProvider extends ContentProvider {
     protected abstract HOSContract.HOSStatusV2 getHOSV2();
 
     /**
-     * Implement this method to return the current team HOS status.
-     *
-     * @return The current HOS
-     */
-    protected abstract HOSContract.HOSStatus getTeamHOS();
-
-    /**
      * Implement this method to return the current team HOS status v2.
      *
      * @return The current HOS
      */
-    protected abstract HOSContract.HOSStatusV2 getTeamHOSV2();
+    protected abstract ArrayList<HOSContract.HOSStatusV2> getTeamHOSV2();
 
     /**
      * Implement this method to indicate when the app started navigation.

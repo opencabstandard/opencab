@@ -2,11 +2,10 @@ package com.eleostech.exampleprovider;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.opencabstandard.provider.AbstractHOSProvider;
 import org.opencabstandard.provider.HOSContract;
+
+import java.util.ArrayList;
 
 public class HOSProvider extends AbstractHOSProvider {
     private static final String LOG_TAG = HOSProvider.class.getName();
@@ -20,17 +19,12 @@ public class HOSProvider extends AbstractHOSProvider {
 
     @Override
     protected HOSContract.HOSStatusV2 getHOSV2() {
-        return HOSUtil.getHOSStatusV2(getContext(), false);
+        return HOSUtil.getHOSStatusV2(getContext());
     }
 
     @Override
-    protected HOSContract.HOSStatus getTeamHOS() {
-        return HOSUtil.getHOSStatus(getContext(), true);
-    }
-
-    @Override
-    protected HOSContract.HOSStatusV2 getTeamHOSV2() {
-        return HOSUtil.getHOSStatusV2(getContext(), true);
+    protected ArrayList<HOSContract.HOSStatusV2> getTeamHOSV2() {
+        return HOSUtil.getHOSStatusTeamV2(getContext());
     }
 
     @Override

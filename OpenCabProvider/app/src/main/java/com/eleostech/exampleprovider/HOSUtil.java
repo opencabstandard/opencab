@@ -11,13 +11,25 @@ import java.util.Date;
 
 public class HOSUtil {
 
+
     private static final String HOS_DURATION_CLOCK_LABEL = "HOS Test Time";
 
-    public static HOSContract.HOSStatusV2 getHOSStatusV2(Context context, boolean isTeamDriver) {
+    public static ArrayList<HOSContract.HOSStatusV2> getHOSStatusTeamV2(Context context) {
+        ArrayList<HOSContract.HOSStatusV2> response = new ArrayList<>();
+        response.add(getHOSStatusV2(context, true, "OPENCAB_TEAM_DRIVER_1"));
+        response.add(getHOSStatusV2(context, true, "OPENCAB_TEAM_DRIVER_2"));
+        return response;
+    }
+
+    public static HOSContract.HOSStatusV2 getHOSStatusV2(Context context) {
+        return getHOSStatusV2(context, false, null);
+    }
+
+    private static HOSContract.HOSStatusV2 getHOSStatusV2(Context context, boolean isTeamDriver, String userName) {
         long currentMillis = System.currentTimeMillis();
         Date currentMillisDate = new Date(currentMillis);
 
-        String username = isTeamDriver ? "OPENCAB_TEAM_DRIVER" : Preferences.getUsername(context);
+        String username = isTeamDriver ? userName : Preferences.getUsername(context);
         String duty = null;
         Date date = new Date();
         String label = null;
