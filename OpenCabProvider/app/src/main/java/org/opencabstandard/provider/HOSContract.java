@@ -186,7 +186,7 @@ public final class HOSContract {
      *                                  {@link HOSContract}.METHOD_GET_HOS,
      *                                  {@link HOSContract}.VERSION,
      *                                  null);
-     *     {@link java.util.ArrayList}&lt;{@link HOSStatusV2}&gt; status = result.getParelableArrayList({@link HOSContract}.KEY_TEAM_HOS);
+     *     {@link java.util.ArrayList}&lt;{@link HOSStatusV2}&gt; status = result.getParcelableArrayList({@link HOSContract}.KEY_TEAM_HOS);
      * </code>
      * </pre>
      */
