@@ -28,7 +28,7 @@ body pre[class*="language-"] {
     white-space: pre;
     font-family: monospace !important;
     text-anchor: start;
-    transform: translateX(-200px);
+    transform: translateX(-20%);
 }
 
 /* Marketing */

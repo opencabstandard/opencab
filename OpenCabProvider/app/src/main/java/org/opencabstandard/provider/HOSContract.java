@@ -10,6 +10,32 @@ import java.util.List;
  * Defines the contract for the OpenCab HOS Content provider.  An OpenCab HOS provider app should define
  * an Android {@link android.content.ContentProvider} class that follows this contract or should extend
  * the {@link AbstractHOSProvider} class and implement the abstract methods.
+ *
+ * <h3>Displaying duty status and hours of service for a single driver</h3>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant A as HOS Consumer
+ *         participant B as HOS Provider
+ *         Note over A: App enumerates available HOS providers and selects HOS Provider app.
+ *         Note over A: App queries HOS provider for current HOS status.
+ *         A-&gt;&gt;B: Call HOSContract.METHOD_GET_HOS("0.3")
+ *         Note over B: App returns current HOS status for the primary driver using<br>the existing KEY_HOS mechanism. Because the provider app<br>supports OpenCab-based team driving, it includes an empty<br>KEY_TEAM_HOS value, indicating there are no additional<br>team drivers.
+ *         B-&gt;&gt;A: Return<br>Bundle{<br>  KEY_VERSION="0.3"<br>  KEY_HOS=HOSStatus{<br>    manageAction="example://com.example.hosprovider/manage"<br>    logoutAction="example://com.example.hosprovider/inspect"<br>    clocks=[<br>      Clock{label="Driver 1", valueType=STRING, value="A"},<br>      Clock{label="Status", valueType=STRING, value="D"},<br>      Clock{label="Driving left", valueType=STRING,<br>            value="8:00", durationSeconds=28800},<br>      Clock{label="Rest in", valueType=STRING,<br>            value="0:23", durationSeconds=1380, limitsDrivingRange=true}<br>  ]}<br>  KEY_TEAM_HOS=null<br>}
+ *         Note over A: App displays Driver A's clocks.
+ * </div>
+ *
+ * <h3>Displaying duty status and hours of service for two drivers</h3>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant A as HOS Consumer
+ *         participant B as HOS Provider
+ *         Note over A: App queries HOS provider for current HOS status.
+ *         A-&gt;&gt;B: Call HOSContract.METHOD_GET_HOS("0.3")
+ *         Note over B: App returns current HOS status for the primary driver using<br>the existing KEY_HOS mechanism, and clocks for the<br>additional driver (driver B) in the KEY_TEAM_HOS array.
+ *         B-&gt;&gt;A: Return<br>Bundle{<br>  KEY_VERSION="0.3"<br>  KEY_HOS=HOSStatus{<br>    manageAction="example://com.example.hosprovider/manage"<br>    logoutAction="example://com.example.hosprovider/inspect"<br>    clocks=[<br>      Clock{label="Driver 1", valueType=STRING, value="A"},<br>      Clock{label="Status", valueType=STRING, value="D"},<br>      Clock{label="Driving left", valueType=STRING,<br>            value="8:00", durationSeconds=28800},<br>      Clock{label="Rest in", valueType=STRING,<br>            value="0:23", durationSeconds=1380, limitsDrivingRange=true}<br>  ]}<br>  KEY_TEAM_HOS=[HOSStatus{<br>    clocks=[<br>      Clock{label="Driver 2", valueType=STRING, value="A"},<br>      Clock{label="Status", valueType=STRING, value="SB"},<br>      Clock{label="Rest in", valueType=STRING, value="0:00", durationSeconds=0}<br>  ]}]<br>}
+ *         Note over A: The app displays duty status and clocks for both driver A<br>and driver B based on the returned information. Normally,<br>the consuming app SHOULD display both sets of clocks<br>with the clocks from KEY_HOS displayed first.
+ * </div>
+ * <p>Since {@link KEY_TEAM_HOS} is an array, a third or fourth driver's clocks could also be returned and displayed.</p>
  */
 public final class HOSContract {
 
