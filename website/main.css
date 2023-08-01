@@ -24,6 +24,13 @@ body pre[class*="language-"] {
 	box-sizing: border-box;
 }
 
+.mermaid .messageText {
+    white-space: pre;
+    font-family: monospace !important;
+    text-anchor: start;
+    transform: translateX(-200px);
+}
+
 /* Marketing */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Work+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
@@ -236,4 +243,195 @@ pre[class*="language-"] {
 
 .token.entity {
 	cursor: help;
+}.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
+}
+.fixedNav::before {
+    text-align: center;
+    content: "Draft Proposal — For Review Only";
+    background-color: hsl(45, 100%, 55%);
+    display: block;
+    font-size: 150%;
+    padding: 5px 0;
 }

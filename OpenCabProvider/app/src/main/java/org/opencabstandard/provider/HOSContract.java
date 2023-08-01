@@ -245,6 +245,16 @@ public final class HOSContract {
         }
 
         /**
+         * The list of current HOS clocks for the driver.
+         * A URI string to launch the OpenCab HOS provider app.
+         *
+         * @param clocks The HOS clocks
+         */
+        public void setClocks(List<Clock> clocks) {
+            this.clocks = clocks;
+        }
+
+        /**
          * A URI string to launch the OpenCab HOS provider app.
          *
          * Providers will launch a {@link Intent.ACTION_VIEW} intent to open this URI.
@@ -607,7 +617,7 @@ public final class HOSContract {
      * value can be one of the types defined in the {@link ValueType} enum.
      *
      * Providers MUST NOT return this data type to a consumer if the consumer has not explicitly signaled support
-     * for at least version 0.3 by passing <pre>"0.3"</pre> to the version parameter of @{link ContentProvider.call}.
+     * for at least version 0.3 by passing <pre>"0.3"</pre> to the version parameter of {@link ContentProvider.call}.
      *
      * <p>
      * An example of the different types of clocks is shown in the image below:

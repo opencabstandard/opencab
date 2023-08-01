@@ -55,10 +55,10 @@
  *       participant A as OpenCab Consumer
  *       participant B as OpenCab Provider
  *       participant C as Consumer Auth Service
- *       A-&gt;&gt;+B: provider.call(METHOD_GET_LOGIN_TOKEN, version: 1)
- *       B-&gt;&gt;A: loginToken
- *       A-&gt;&gt;C: Authentication Request w/loginToken
- *       C-&gt;&gt;A: Authentication Response
+ *       A-&gt;&gt;+B: provider.call(METHOD_GET_LOGIN_CREDENTIALS, version: "0.2")
+ *       B-&gt;&gt;A: KEY_VERSION="0.2" <br>KEY_LOGIN_CREDENTIALS=LoginCredentials{ authority="example" token="kf40m1fpl…d28zckhuf6" … }
+ *       A-&gt;&gt;C: Authentication request with token
+ *       C-&gt;&gt;A: Authentication response
  * </div>
  *
  * <h3>Package visibility</h3>

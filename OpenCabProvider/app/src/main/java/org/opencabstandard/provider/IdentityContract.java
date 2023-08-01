@@ -9,6 +9,26 @@ import android.os.Parcelable;
  * define an Android {@link android.content.ContentProvider} class
  * that follows this contract or should subclass the {@link AbstractIdentityProvider} class and
  * implement the abstract methods.
+ * <h3>Single-sign on for one driver</h3>
+ * <p>
+ * An example sequence where an Identity consumer detects a login and performs single-sign on might be the following:
+ * </p>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant A as Identity Consumer
+ *         participant B as Identity Provider
+ *         Note over B: Driver A logs in
+ *         B-&gt;&gt;A: Broadcast: ACTION_DRIVER_LOGIN
+ *         Note over A: App enumerates available Identity<br>providers and selects one.
+ *         Note over A: App queries provider for list of active drivers.
+ *         A-&gt;&gt;B: Call: METHOD_GET_ACTIVE_DRIVERS, version: "0.2"
+ *         B-&gt;&gt;A: Return: [Driver{username="A"}]
+ *         Note over A: App currently has no logged in user,<br>and notices that it now needs to have<br>user A logged in to match<br>the identity provider state.
+ *         Note over A: The consumer makes a call to the Identity<br>provider and signals that it understands<br>version 0.3 of the contract and that it wants session<br> credentials for all active drivers. This is a<br>separate call from METHOD_GET_ACTIVE_DRIVERS<br>since it may be expensive for a provider to fetch<br>or generate credentials, and it should only be<br>called when needed, not simply to monitor<br>the list of active drivers.
+ *         A-&gt;&gt;B: Call: METHOD_GET_LOGIN_CREDENTIALS, version: "0.3"
+ *         Note over B: The provider app sees the "0.3" version and knows the calling<br>application supports team drivers via OpenCab. <br>If the version is "0.2" or lower, the provider knows the<br>calling application does not support team drivers via OpenCab.
+ *         B-&gt;&gt;A: Return: <br>KEY_VERSION="0.3"<br>KEY_ALL_LOGIN_CREDENTIALS=[<br>  IdentityContract.DriverSession{<br>    username="A",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="kf40m1fpl…d28zckhuf6"<br>    }<br>  }<br>]<br>
+ * </div>
  */
 public final class IdentityContract {
 
