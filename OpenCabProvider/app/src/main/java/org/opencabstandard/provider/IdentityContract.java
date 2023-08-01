@@ -29,6 +29,22 @@ import android.os.Parcelable;
  *         Note over B: The provider app sees the "0.3" version and knows the calling<br>application supports team drivers via OpenCab. <br>If the version is "0.2" or lower, the provider knows the<br>calling application does not support team drivers via OpenCab.
  *         B-&gt;&gt;A: Return: <br>KEY_VERSION="0.3"<br>KEY_ALL_LOGIN_CREDENTIALS=[<br>  IdentityContract.DriverSession{<br>    username="A",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="kf40m1fpl…d28zckhuf6"<br>    }<br>  }<br>]<br>
  * </div>
+ * <h3>Single sign-on for a second (team) driver</h3>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant B as Identity Consumer
+ *         participant A as Identity Provider
+ *         Note over A: Driver B taps the option to log in and enters their<br>credentials for the Identity provider app.
+ *         A-&gt;&gt;B: Broadcast: IdentityContract.ACTION_DRIVER_LOGIN
+ *         Note over B: App queries provider for list of active drivers.
+ *         B-&gt;&gt;A: Call<br>IdentityContract.METHOD_GET_ACTIVE_DRIVERS("0.2")
+ *         A-&gt;&gt;B: Return<br>[Driver{username="A"}, Driver{username="B"}]
+ *         Note over B: App currently has only driver A logged in, so it knows that it<br>now needs to have user B logged in as well to match the <br>identity provider state.
+ *         Note over B: The app makes a call to the Identity provider and signals<br>that it understands version 0.3 of the contract and that it<br>wants session credentials for all active drivers. This is a<br>separate call from METHOD_GET_ACTIVE_DRIVERS<br>since it may be expensive for a provider to fetch or generate<br>credentials, and it should only be called when needed, not<br>simply to monitor the list of active drivers.
+ *         B-&gt;&gt;A: Call<br>IdentityContract.METHOD_GET_LOGIN_CREDENTIALS("0.3")
+ *         A-&gt;&gt;B: Return<br>KEY_VERSION="0.3"<br>KEY_ALL_LOGIN_CREDENTIALS=[<br>  IdentityContract.DriverSession{<br>    username="A",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="kf40m1fpl…d28zckhuf6"<br>    }<br>  },<br>  IdentityContract.DriverSession{<br>    username="B",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="p0LLdm3Ma…KEAd8vMN12d"<br>    }<br>  }<br>]
+ *         Note over B: App adjusts session state to be have driver A and B both logged in.
+ * </div>
  */
 public final class IdentityContract {
 
