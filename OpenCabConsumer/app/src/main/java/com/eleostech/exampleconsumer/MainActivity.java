@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void callHOSProvider() {
         Log.d(LOG_TAG, "callHOSProvider()");
+        // See section 4.3 of the specification, "Selecting and calling providers,"
+        // for details about this enumeration process.
         List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
         search:
         for (PackageInfo pkg : packages) {

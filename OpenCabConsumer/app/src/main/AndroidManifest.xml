@@ -55,7 +55,10 @@
         <!-- These receiver declarations allow the consumer to be notified explicitly when
              certain provider values change. For more information, see "For broadcast intents" at
              https://docs.opencabstandard.org/org/opencabstandard/provider/package-summary.html.
-        -->
+
+             These receiver classes are in their own package to help ensure that
+             when using this sample consumer for testing, providers are fully
+             complaint with the enumeration logic defined in section 3.4 of the specification. -->
         <receiver
             android:name=".receiver.VehicleInformationChangedReceiver"
             android:enabled="true"

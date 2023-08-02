@@ -114,8 +114,10 @@ public class IdentityProvider extends AbstractIdentityProvider {
         Log.d(LOG_TAG, "getActiveDrivers() for version " + version);
         ArrayList<IdentityContract.Driver> activeDrivers = Preferences.getActiveDrivers(getContext());
         if (Preferences.isIdentityProviderTeamDriverEnabled(getContext())) {
+            // See subsection 3.5.4 for details about this fallback logic.
             Version requestedVersion = new Version(version != null ? version : "0.2");
             Version supportedVersion = new Version("0.3");
+            // This implements subsection 3.5.3 of the spec.
             if (requestedVersion.compareTo(supportedVersion) >= 0) {
                 if (activeDrivers != null) {
                     IdentityContract.Driver teamDriver = new IdentityContract.Driver();

@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 // package name-based filtering by checking `value.packageName` against
                 // a server-provided list. It is not recommended that you hard code any
                 // package names in your mobile implementation directly.
+                // See section 5, "Security," of the specification for more information.
                 Intent intent1 = new Intent();
                 intent1.setComponent(new ComponentName(value.packageName, key));
                 intent1.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
@@ -251,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void broadCastEvent() {
+        // See section 3.4, "Publishing broadcast intents," for specifics about
+        // this process.
         String event = binding.broadcastEventSpinner.getSelectedItem().toString();
         Log.d(LOG_TAG, "Broadcasting " + event + " event");
         HashMap<String, ActivityInfo> discoveredReceivers;
@@ -313,6 +316,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private HashMap<String, ActivityInfo> getReceivers(String type) {
+        // See section 3.4, "Publishing broadcast intents", for specifics about this
+        // enumeration process.
         List<PackageInfo> packages = getApplication().getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
         HashMap<String, ActivityInfo> discoveredReceivers = new HashMap<>();
         if (packages != null) {
