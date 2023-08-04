@@ -29,6 +29,8 @@ public class Preferences {
 
     private static final String PREFS_MANAGE_ACTION = "PREFS_MANAGE_ACTION";
 
+    private static final String PREFS_TOGGLE_LOGOUT_ACTION = "PREFS_TOGGLE_LOGOUT_ACTION";
+
     public static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
@@ -132,6 +134,16 @@ public class Preferences {
 
     public static boolean isIdentityProviderTeamDriverEnabled(Context context) {
         return getPreferences(context).getBoolean(PREFS_IDENTITY_PROVIDER_TEAM_DRIVER, false);
+    }
+
+    public static void setToggleLogoutAction(Context context, boolean logoutAction) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putBoolean(PREFS_TOGGLE_LOGOUT_ACTION, logoutAction);
+        editor.commit();
+    }
+
+    public static boolean getToggleLogoutAction(Context context) {
+        return getPreferences(context).getBoolean(PREFS_TOGGLE_LOGOUT_ACTION, false);
     }
 
     public static boolean isManageAction(Context context) {

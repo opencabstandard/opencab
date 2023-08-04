@@ -38,8 +38,8 @@
             android:id="@+id/welcome_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:textSize="30sp">
+            android:layout_marginBottom="12dp"
+            android:textSize="25sp">
 
         </TextView>
 
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Duty Status:"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -147,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="6dp"
             android:text="Enter token here"
             android:visibility="gone" />
@@ -156,7 +156,7 @@
             android:id="@+id/identity_provider_team_driver_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:checked="false"
             android:text="Add team driver" />
 
@@ -168,14 +168,23 @@
             android:checked="true"
             android:text="Send manage and login actions" />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggle_logout_Action_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:checked="false"
+            android:text="Toggle logout action uri" />
+
         <TextView
             android:id="@+id/hos_clocks_version_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:text="Force HOS Version"
-            android:textSize="16dp" />
+            android:text="Force HOS Version:"
+            android:textSize="14dp"
+            android:layout_marginTop="14dp" />
 
         <Spinner
             android:id="@+id/hos_clocks_version_spinner"
@@ -191,6 +200,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

@@ -126,12 +126,18 @@ public class MainActivity extends AppCompatActivity {
 
         binding.sendManageActionSwitch.setOnClickListener(v -> updateSendManageActionSwitch());
 
+        binding.toggleLogoutActionSwitch.setOnClickListener(v -> updateToggleLogoutActionSwitch());
+
         binding.identityProviderTeamDriverSwitch.setOnClickListener(v -> updateIdentityProviderTeamDriver());
         Preferences.setIdentityResponseToken(this, null);
     }
 
     private void updateSendManageActionSwitch() {
         Preferences.setManageAction(this, binding.sendManageActionSwitch.isChecked());
+    }
+
+    private void updateToggleLogoutActionSwitch() {
+        Preferences.setToggleLogoutAction(this, binding.toggleLogoutActionSwitch.isChecked());
     }
 
     private void saveToken(String text) {

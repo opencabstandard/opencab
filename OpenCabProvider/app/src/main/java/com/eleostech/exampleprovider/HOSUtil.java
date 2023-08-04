@@ -103,8 +103,9 @@ public class HOSUtil {
         HOSContract.HOSStatusV2 hosStatusV2 = new HOSContract.HOSStatusV2();
         hosStatusV2.setClocks(clocks);
         if (Preferences.isManageAction(context)) {
+            String logoutAction = Preferences.getToggleLogoutAction(context) ? "googlechrome://navigate?url=google.com" : "hos://com.eleostech.opencabprovider/hos";
             hosStatusV2.setManageAction("hos://com.eleostech.opencabprovider/hos");
-            hosStatusV2.setLogoutAction("hos://com.eleostech.opencabprovider/hos");
+            hosStatusV2.setLogoutAction(logoutAction);
         }
         return hosStatusV2;
     }
