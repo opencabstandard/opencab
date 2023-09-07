@@ -133,7 +133,7 @@
  * <pre class="language-xml"> {@code
  *  <queries>
  *    <intent>
- *      <action android:name="IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED" />
+ *      <action android:name="com.opencabstandard.VEHICLE_INFORMATION_CHANGED" />
  *    </intent>
  *  </queries>
  * } </pre>
@@ -204,8 +204,10 @@
  *           android:enabled="true"
  *           android:exported="true">
  *   <intent-filter>
- *     <action android:name="IdentityContract.ACTION_DRIVER_LOGIN" />
- *     <action android:name="IdentityContract.ACTION_DRIVER_LOGOUT" />
+ *     <action android:name="org.opencabstandard.ACTION_DRIVER_LOGIN" />
+ *     <!-- `com.` is intentional to preserve compatibility with an earlier,
+ *           erroenous version of the specification. -->
+ *     <action android:name="com.opencabstandard.ACTION_DRIVER_LOGOUT" />
  *   </intent-filter>
  * </receiver>
  * }</pre>
