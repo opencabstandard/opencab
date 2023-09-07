@@ -3,14 +3,14 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "30.0.0"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.eleostech.opencabprovider"
+        namespace = "com.eleostech.opencabprovider"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode Integer.valueOf(System.env.CIRCLE_BUILD_NUM ?: 1)
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,8 +45,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-gson:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 task javadoc(type: Javadoc) {

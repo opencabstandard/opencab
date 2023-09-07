@@ -2,35 +2,29 @@ package com.eleostech.exampleprovider;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.opencabstandard.provider.AbstractHOSProvider;
 import org.opencabstandard.provider.HOSContract;
+
+import java.util.ArrayList;
 
 public class HOSProvider extends AbstractHOSProvider {
     private static final String LOG_TAG = HOSProvider.class.getName();
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSZ";
 
-    public static Gson createGson() {
-        GsonBuilder gsonb = new GsonBuilder();
-        gsonb.setDateFormat(DATE_FORMAT);
-        Gson gson = gsonb.create();
-
-        return gson;
+    @Override
+    protected HOSContract.HOSStatus getHOS() {
+        return HOSUtil.getHOSStatus(getContext(), false);
     }
 
     @Override
-    protected HOSContract.HOSStatus getHOS(String version) {
-        String json = Preferences.getHOS(getContext());
-        Log.d(LOG_TAG, "HOS json: " + json);
+    protected HOSContract.HOSStatusV2 getHOSV2() {
+        return HOSUtil.getHOSStatusV2(getContext());
+    }
 
-        HOSContract.HOSStatus status = null;
-        status = createGson().fromJson(json, HOSContract.HOSStatus.class);
-
-
-        return status;
+    @Override
+    protected ArrayList<HOSContract.HOSStatusV2> getTeamHOSV2() {
+        return HOSUtil.getHOSStatusTeamV2(getContext());
     }
 
     @Override
@@ -45,6 +39,16 @@ public class HOSProvider extends AbstractHOSProvider {
         Log.d(LOG_TAG, "endNavigation()");
         Preferences.setNavigationState(getContext(), false);
         return true;
+    }
+
+    @Override
+    protected Boolean isTeamDriverEnabled() {
+        return Preferences.isIdentityProviderTeamDriverEnabled(getContext());
+    }
+
+    @Override
+    protected String getHosVersion() {
+        return Preferences.getHosVersion(getContext());
     }
 
 }

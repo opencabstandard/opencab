@@ -9,3 +9,5 @@
 /captures
 .externalNativeBuild
 .cxx
+/OpenCabConsumer/.idea/
+/OpenCabProvider/.idea/

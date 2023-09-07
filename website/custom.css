@@ -18,6 +18,13 @@ main {
     margin: 0 auto;
 }
 
+.mermaid .messageText {
+    white-space: pre;
+    font-family: monospace;
+    text-anchor: start;
+    transform: translateX(-200px);
+}
+
 /*
 
 Theme Name: Shapely Child

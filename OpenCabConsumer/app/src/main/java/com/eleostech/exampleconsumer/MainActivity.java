@@ -14,8 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.eleostech.exampleconsumer.databinding.ActivityMainBinding;
 
+import org.opencabstandard.provider.HOSContract;
 import org.opencabstandard.provider.IdentityContract;
 import org.opencabstandard.provider.VehicleInformationContract;
+import org.opencabstandard.provider.Version;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
     private ActivityMainBinding binding;
-
+    private ArrayAdapter<String> adapterHos;
     private ArrayAdapter<String> adapterBroadcastedEvents;
     private ArrayAdapter<String> adapterVehicleInformation;
     private ArrayAdapter<String> adapterLoginCredentials;
@@ -41,10 +43,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        binding.hosButton.setOnClickListener(v -> callHOSProvider());
         binding.vehicleInformationButton.setOnClickListener(v -> callVehicleInformationProvider());
         binding.identityProviderLoginCredentialsButton.setOnClickListener(v -> callIdentityProviderGetLoginCredentials());
         binding.identityActiveDriverButton.setOnClickListener(v -> callIdentityProviderGetActiveDrivers());
         EventBus.getDefault().register(this);
+
+        adapterHos = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        binding.hosListView.setAdapter(adapterHos);
 
         adapterBroadcastedEvents = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         binding.broadcastListView.setAdapter(adapterBroadcastedEvents);
@@ -91,6 +97,84 @@ public class MainActivity extends AppCompatActivity {
         adapterBroadcastedEvents.insert(dateTime + " : " + event, 0);
     }
 
+
+    private void callHOSProvider() {
+        Log.d(LOG_TAG, "callHOSProvider()");
+        // See section 4.3 of the specification, "Selecting and calling providers,"
+        // for details about this enumeration process.
+        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+        search:
+        for (PackageInfo pkg : packages) {
+            if (pkg.providers != null) {
+                for (ProviderInfo provider : pkg.providers) {
+                    if (provider.authority != null) {
+                        if (provider.authority.endsWith(".org.opencabstandard.hos")) {
+                            ContentResolver resolver = getApplicationContext().getContentResolver();
+                            Uri authority = Uri.parse("content://" + provider.authority);
+                            Bundle result;
+                            SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
+                            String dateTime = s.format(new Date());
+                            try {
+                                result = resolver.call(authority, HOSContract.METHOD_GET_HOS, HOSContract.VERSION, null);
+                            } catch (Exception ex) {
+                                Log.i(LOG_TAG, "Error calling provider: ", ex);
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
+                                return;
+                            }
+
+                            if (result != null) {
+                                Log.d(LOG_TAG, "Got result!");
+                                result.setClassLoader(HOSContract.class.getClassLoader());
+
+                                Version maxSupportedVersion = new Version("0.3");
+                                Version resultVersion;
+                                if (result.containsKey(HOSContract.KEY_VERSION) && result.get(HOSContract.KEY_VERSION) != null) {
+                                    resultVersion = new Version(result.getString(HOSContract.KEY_VERSION));
+                                } else {
+                                    resultVersion = new Version("0.3");
+                                }
+                                if (resultVersion.compareTo(maxSupportedVersion) >= 1) {
+                                    adapterHos.insert(dateTime + " : " + "Version " + resultVersion + " is not supported", 0);
+                                } else if (result.containsKey(HOSContract.KEY_HOS)) {
+                                    HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_HOS);
+                                    if (hosStatus != null) {
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
+                                        for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                        }
+                                    }
+                                } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                    String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                    Log.d(LOG_TAG, "Error: " + error);
+                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                }
+                                if (result.containsKey(HOSContract.KEY_TEAM_HOS)) {
+                                    ArrayList<HOSContract.HOSStatusV2> hosStatusList = result.getParcelableArrayList(HOSContract.KEY_TEAM_HOS);
+                                    if (hosStatusList != null && hosStatusList.size() > 0) {
+                                        for (HOSContract.HOSStatusV2 item : hosStatusList) {
+                                            if (item.getClocks() != null) {
+                                                for (HOSContract.ClockV2 clock : item.getClocks()) {
+                                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                    String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                    Log.d(LOG_TAG, "Error: " + error);
+                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                }
+                            } else {
+                                Log.d(LOG_TAG, "Result from provider is null.");
+                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: Result from provider is null.", 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void callVehicleInformationProvider() {
         Log.d(LOG_TAG, "callVehicleInformationProvider()");
         List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
@@ -106,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getVehicleInformation", "0.2", null);
+                                result = resolver.call(authority, VehicleInformationContract.METHOD_GET_VEHICLE_INFORMATION, VehicleInformationContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -118,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                                 result.setClassLoader(VehicleInformationContract.class.getClassLoader());
                                 if (result.containsKey(VehicleInformationContract.KEY_VEHICLE_INFORMATION)) {
                                     VehicleInformationContract.VehicleInformation vinfo = result.getParcelable(VehicleInformationContract.KEY_VEHICLE_INFORMATION);
-                                    adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", VIN: " + vinfo.getVin() + ", Vehicle ID: " + vinfo.getVehicleId() + ", InGear: " + vinfo.isInGear(), 0);
+                                    adapterVehicleInformation.insert(dateTime + " : " + "Package: " + provider.packageName + ", VIN: " + vinfo.getVin() + ", Vehicle ID: " + vinfo.getVehicleId() + ", InGear: " + vinfo.isInGear() + ", KEY_VERSION: " + (result.containsKey(VehicleInformationContract.KEY_VERSION) ? result.getString(VehicleInformationContract.KEY_VERSION) : "null"), 0);
                                 } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
                                     String error = result.getString(VehicleInformationContract.KEY_ERROR);
                                     Log.d(LOG_TAG, "Error: " + error);
@@ -151,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getLoginCredentials", "0.2", null);
+                                result = resolver.call(authority, IdentityContract.METHOD_GET_LOGIN_CREDENTIALS, IdentityContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -161,18 +245,27 @@ public class MainActivity extends AppCompatActivity {
                             if (result != null) {
                                 Log.d(LOG_TAG, "Got result!");
                                 result.setClassLoader(IdentityContract.class.getClassLoader());
-                                if (result.containsKey(IdentityContract.KEY_LOGIN_CREDENTIALS)) {
-                                    IdentityContract.LoginCredentials loginCredentials = result.getParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS);
-                                    Log.d(LOG_TAG, "Got token: " + loginCredentials);
-                                    if (loginCredentials != null) {
-                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName  + ", Token: " + loginCredentials.getToken() + ", Provider: " + loginCredentials.getProvider(), 0);
-                                    } else {
-                                        adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No login credentials found", 0);
+                                if (result.containsKey(IdentityContract.KEY_LOGIN_CREDENTIALS) || result.containsKey(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS)) {
+                                    if (result.containsKey(IdentityContract.KEY_LOGIN_CREDENTIALS)) {
+                                        IdentityContract.LoginCredentials loginCredentials = result.getParcelable(IdentityContract.KEY_LOGIN_CREDENTIALS);
+                                        Log.d(LOG_TAG, "Found login credentials: " + loginCredentials);
+                                        adapterLoginCredentials.insert(dateTime + " : " + "KEY_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Token: " + (loginCredentials != null ? loginCredentials.getToken() : "null") + ", Authority: " + (loginCredentials != null ? loginCredentials.getAuthority() : "null") + ", Provider: " + (loginCredentials != null ? loginCredentials.getProvider() : "null") + ", KEY_VERSION: " + (result.containsKey(IdentityContract.KEY_VERSION) ? result.getString(IdentityContract.KEY_VERSION) : "null"), 0);
+                                    }
+                                    if (result.containsKey(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS)) {
+                                        ArrayList<IdentityContract.DriverSession> driverSessionArrayList = result.getParcelableArrayList(IdentityContract.KEY_ALL_LOGIN_CREDENTIALS);
+                                        Log.d(LOG_TAG, "Found driver sessions: " + driverSessionArrayList);
+                                        if (driverSessionArrayList != null && driverSessionArrayList.size() > 0) {
+                                            for (IdentityContract.DriverSession driverSession : driverSessionArrayList) {
+                                                adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Username: " + (driverSession != null ? driverSession.getUsername() : "null") + ", Token: " + (driverSession != null ? driverSession.getLoginCredentials().getToken() : "null") + ", Provider: " + ((driverSession != null && driverSession.getLoginCredentials() != null) ? driverSession.getLoginCredentials().getProvider() : "null"), 0);
+                                            }
+                                        } else {
+                                            adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Error: No login credentials found", 0);
+                                        }
                                     }
                                 } else if (result.containsKey(IdentityContract.KEY_ERROR)) {
                                     String error = result.getString(IdentityContract.KEY_ERROR);
                                     Log.d(LOG_TAG, "Error: " + error);
-                                    adapterLoginCredentials.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                    adapterLoginCredentials.insert(dateTime + " : " + "KEY_ALL_LOGIN_CREDENTIALS | Package: " + provider.packageName + ", Error: " + error, 0);
                                 }
                             } else {
                                 Log.d(LOG_TAG, "Result from provider is null.");
@@ -200,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat s = new SimpleDateFormat("MM/dd hh:mm:ss");
                             String dateTime = s.format(new Date());
                             try {
-                                result = resolver.call(authority, "getActiveDrivers", "0.2", null);
+                                result = resolver.call(authority, IdentityContract.METHOD_GET_ACTIVE_DRIVERS, IdentityContract.VERSION, null);
                             } catch (Exception ex) {
                                 Log.i(LOG_TAG, "Error calling provider: ", ex);
                                 adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + ex.getMessage(), 0);
@@ -214,7 +307,9 @@ public class MainActivity extends AppCompatActivity {
                                     List<IdentityContract.Driver> drivers = result.getParcelableArrayList(IdentityContract.KEY_ACTIVE_DRIVERS);
                                     Log.d(LOG_TAG, "Got drivers: " + drivers);
                                     if (drivers != null && drivers.size() > 0) {
-                                        adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Driver Name: " + drivers.get(0).getUsername() + ", Is Driving: " + drivers.get(0).isDriving(), 0);
+                                        for (IdentityContract.Driver driver : drivers) {
+                                            adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Driver Name: " + driver.getUsername() + ", Is Driving: " + driver.isDriving(), 0);
+                                        }
                                     } else {
                                         adapterActiveDrivers.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: No active drivers found", 0);
 

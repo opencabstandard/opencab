@@ -24,6 +24,13 @@ body pre[class*="language-"] {
 	box-sizing: border-box;
 }
 
+.mermaid .messageText {
+    white-space: pre;
+    font-family: monospace !important;
+    text-anchor: start;
+    transform: translateX(-20%);
+}
+
 /* Marketing */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Work+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');

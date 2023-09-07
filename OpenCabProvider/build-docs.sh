@@ -17,5 +17,5 @@ if [ "$VERCEL_ENV" != "production" ]; then
 EOF
 fi
 
-./gradlew javadoc
+./gradlew javadoc 2>&1
 cp -R ../website/images app/build/docs/javadoc
