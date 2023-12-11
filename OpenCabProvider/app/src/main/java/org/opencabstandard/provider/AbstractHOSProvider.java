@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 /**
@@ -119,6 +121,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                 Version requestedVersion = new Version(getHosVersion() != null ? getHosVersion() : "0.2");
                 Version supportedVersionV2 = new Version("0.2");
                 Version supportedVersionV3 = new Version("0.3");
+                Version supportedVersionV4 = new Version("0.4");
                 Log.i(LOG_TAG, "requested version: " + requestedVersion + ", supported version: " + supportedVersionV2);
                 if (requestedVersion.compareTo(supportedVersionV2) == 0) {
                     HOSContract.HOSStatus status = getHOS();
@@ -128,7 +131,7 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
                     }
-                } else if (requestedVersion.compareTo(supportedVersionV3) >= 0) {
+                } else if (requestedVersion.compareTo(supportedVersionV3) == 0) {
                     HOSContract.HOSStatusV2 status = getHOSV2();
                     if (status != null) {
                         result.putParcelable(HOSContract.KEY_HOS, status);
@@ -139,6 +142,19 @@ public abstract class AbstractHOSProvider extends ContentProvider {
                     } else {
                         result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
                     }
+                } else if (requestedVersion.compareTo(supportedVersionV4) >= 0) {
+                    Gson gson = new Gson();
+                    HOSContract.HOSData hosData = getHOSData();
+                    if (hosData != null) {
+                        result.putString(HOSContract.KEY_HOS, gson.toJson(hosData));
+                        if (isTeamDriverEnabled()) {
+                            result.putString(HOSContract.KEY_TEAM_HOS, gson.toJson(getHOSTeamData()));
+                        }
+                        result.putString(HOSContract.KEY_VERSION, "0.4");
+                    } else {
+                        result.putString(HOSContract.KEY_ERROR, "Sorry, we are unable to fetch the current HOS.");
+                    }
+
                 }
                 break;
             case HOSContract.METHOD_START_NAVIGATION:
@@ -177,6 +193,19 @@ public abstract class AbstractHOSProvider extends ContentProvider {
      * @return The current HOS
      */
     protected abstract ArrayList<HOSContract.HOSStatusV2> getTeamHOSV2();
+
+    /**
+     * Implement this method to return the current HOSData
+     *
+     * @return The current HOS for version 0.4
+     */
+    protected abstract HOSContract.HOSData getHOSData();
+
+    /**
+     *
+     * @return The current HOS Team Data for version 0.4
+     */
+    protected abstract HOSContract.HOSTeamData getHOSTeamData();
 
     /**
      * Implement this method to indicate when the app started navigation.

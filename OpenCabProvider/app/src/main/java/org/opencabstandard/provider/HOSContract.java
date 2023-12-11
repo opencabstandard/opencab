@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +47,7 @@ public final class HOSContract {
      * be passed as an argument to all method calls to the provider. The provider may reject or handle
      * appropriately if the VERSION does not match the expected value when passed to the method calls.
      */
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "0.4";
 
     /**
      * This authority is used for querying the HOS provider.  This should be declared in the manifest
@@ -860,5 +863,298 @@ public final class HOSContract {
                 return new ClockV2[size];
             }
         };
+    }
+
+    /**
+     * An object representing the HOS Team Data for version 0.4.
+     */
+    public static class HOSTeamData {
+
+        /**
+         * Get the list of HOSData for the team
+         * @return A list of HOSData objects representing the current team data
+         */
+        public ArrayList<HOSData> getTeamHosData() {
+            return teamHosData;
+        }
+
+        /**
+         * Set the list of HOSData for the team
+         * @param teamHosData - List of current HOSData
+         */
+        public void setTeamHosData(ArrayList<HOSData> teamHosData) {
+            this.teamHosData = teamHosData;
+        }
+
+        private ArrayList<HOSData> teamHosData;
+    }
+
+    /**
+     * An object representing the HOS data for version 0.4
+     */
+    public static class HOSData {
+        private List<ClockData> clocks;
+        private String manageAction;
+        private String logoutAction;
+        private String username;
+
+        public HOSData() {
+
+        }
+
+        /**
+         * The list of current HOS clocks for the driver.
+         *
+         * @return The HOS clocks
+         */
+        public List<ClockData> getClocks() {
+            return clocks;
+        }
+
+        /**
+         * The list of current HOS clocks for the driver.
+         *
+         * @param clocks The HOS clocks
+         */
+        public void setClocks(List<ClockData> clocks) {
+            this.clocks = clocks;
+        }
+
+        /**
+         * A URI string used to launch the OpenCab HOS provider app.
+         *
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
+         *
+         * @return The URI string
+         */
+        public String getManageAction() {
+            return manageAction;
+        }
+
+        /**
+         * A URI string to launch the OpenCab HOS provider app.
+         *
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
+         *
+         * @param manageAction The URI string
+         */
+        public void setManageAction(String manageAction) {
+            this.manageAction = manageAction;
+        }
+
+        /**
+         * A URI string to launch logout on the OpenCab HOS provider app.
+         *
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
+         *
+         * @return The URI string
+         */
+        public String getLogoutAction() {
+            return logoutAction;
+        }
+
+        /**
+         * A URI string to launch logout on the OpenCab HOS provider app.
+         *
+         * Providers will launch a {@link android.content.Intent#ACTION_VIEW} intent to open this URI.
+         *
+         * @param logoutAction The URI string
+         */
+        public void setLogoutAction(String logoutAction) {
+            this.logoutAction = logoutAction;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+    }
+
+    /**
+     * Object representing an HOS clock for version 0.4. A clock contains a descriptive label and the value.  The
+     * value can be one of the types defined in the {@link ClockData.ValueType} enum.
+     *
+     * Providers MUST NOT return this data type to a consumer if the consumer has not explicitly signaled support
+     * for at least version 0.4 by passing <pre>"0.4"</pre> to the version parameter of {@link android.content.ContentProvider#call}.
+     *
+     * <p>
+     * An example of the different types of clocks is shown in the image below:
+     * </p>
+     *
+     * <img src="../../../images/clocks-example.png" alt="Hours of service screenshot from the mobile application.">
+     */
+    public static class ClockData {
+        private String label;
+        private String value;
+        private ClockData.ValueType valueType;
+        private boolean important;
+        private boolean limitsDrivingRange;
+        private Double durationSeconds;
+
+        /**
+         * Allowed types for valueType field.
+         */
+        public enum ValueType {
+
+            /**
+             * You can also use a string for an ELD clock duration (like 4:32) if you want to ensure
+             * your own specific rounding and formatting logic is used. In this case, providers SHOULD
+             * provide the actual duration in seconds using the {@link durationSeconds} property. Consumers MUST
+             * display the <code>value</code>, but MAY use {@link durationSeconds} for business logic other than
+             * pure information display.
+             */
+            STRING("string"),
+
+            /**
+             * Indicates that the value field will contain a date in
+             * <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
+             * format.  The date will appear formatted as "MM/dd/yyyy".  An example for this type of clock
+             * could be the date of next required truck service.
+             */
+            DATE("date"),
+
+            /**
+             * Indicates that the value field will contain a date in
+             * <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
+             * format that will be shown as a clock counting up from the provided date.  An example for this
+             * type of clock could be the number of hours since last rest.
+             */
+            COUNTUP("countup"),
+
+            /**
+             * Indicates that the value field will contain a date in
+             * <a href="https://tools.ietf.org/html/rfc3339">RFC3339</a>
+             * format that will be shown as a clock counting down to zero.  The counter will not go below zero.
+             * An example for this type of clock could be the remaining available drive time.
+             */
+            COUNTDOWN("countdown");
+
+            private final String type;
+
+            ValueType(String t) {
+                type = t;
+            }
+
+            @NonNull
+            public String toString() {
+                return this.type;
+            }
+        }
+
+
+        /**
+         * Label for the clock.
+         *
+         * @param label The clock label.
+         */
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        /**
+         * The value of the clock.  The format of this field will depend on the {@link Clock}.valueType field.
+         *
+         * @param value The clock value.
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        /**
+         * The value type of the clock.  See {@link ClockData.ValueType} for the possible types.
+         *
+         * @param valueType The valueType for the clock.
+         */
+        public void setValueType(ClockData.ValueType valueType) {
+            this.valueType = valueType;
+        }
+
+        /**
+         * Indicates the important clock. Consumers may interpret this flag in multiple ways,
+         * but one possible use is to determine which clock to display in a compact view
+         * layout that only permits a single clock to be shown.
+         *
+         * @param important Flag indicating which is the most important clock in the list.
+         */
+        public void setImportant(boolean important) {
+            this.important = important;
+        }
+
+        /**
+         * Indicates which clock most tightly limits the time a driver can spend driving.
+         * Consumers may interpret this flag in multiple ways, but one possible use is to
+         * indicate where a driver needs to plan to shut down when planning a route.
+         *
+         * @param limitsDrivingRange Flag indicating which clock limits the driving range.
+         */
+        public void setLimitsDrivingRange(boolean limitsDrivingRange) {
+            this.limitsDrivingRange = limitsDrivingRange;
+        }
+
+        /**
+         * Get the label for the clock.
+         *
+         * @return The label for the clock.
+         */
+        public String getLabel() {
+            return label;
+        }
+
+        /**
+         * Get the value for the clock.
+         *
+         * @return The value for the clock.
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
+         * Get the value type
+         *
+         * @return The value type for the clock.
+         */
+        public ClockData.ValueType getValueType() {
+            return valueType;
+        }
+
+        /**
+         * Is the important flag set.
+         *
+         * @return Flag indicating this is the most important clock.
+         */
+        public boolean isImportant() {
+            return important;
+        }
+
+        /**
+         * Is the limitsDrivingRange flag set.
+         *
+         * @return Flag indicating this clock will limit the driving range.
+         */
+        public boolean isLimitsDrivingRange() {
+            return limitsDrivingRange;
+        }
+
+        /**
+         * Get the duration seconds
+         *
+         * @return The duration seconds for the clock.
+         */
+        public Double getDurationSeconds() {
+            return durationSeconds;
+        }
+
+        /**
+         * The duration seconds for the clock.
+         *
+         * @param durationSeconds The duration seconds for the clock.
+         */
+        public void setDurationSeconds(Double durationSeconds) {
+            this.durationSeconds = durationSeconds;
+        }
     }
 }
