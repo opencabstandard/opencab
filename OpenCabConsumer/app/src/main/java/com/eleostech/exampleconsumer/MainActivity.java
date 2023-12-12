@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (result.containsKey(HOSContract.KEY_HOS)) {
                                         HOSContract.HOSData hosStatus = gson.fromJson(result.getString(HOSContract.KEY_HOS), HOSContract.HOSData.class);
                                         if (hosStatus != null) {
-                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Username: " + hosStatus.getUsername() +", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
                                             for (HOSContract.ClockData clock : hosStatus.getClocks()) {
                                                 adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
                                             }
