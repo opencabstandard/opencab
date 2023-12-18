@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.eleostech.exampleconsumer.databinding.ActivityMainBinding;
+import com.google.gson.Gson;
 
 import org.opencabstandard.provider.HOSContract;
 import org.opencabstandard.provider.IdentityContract;
@@ -21,6 +22,7 @@ import org.opencabstandard.provider.Version;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -103,12 +105,14 @@ public class MainActivity extends AppCompatActivity {
         // See section 4.3 of the specification, "Selecting and calling providers,"
         // for details about this enumeration process.
         List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
+        adapterHos.clear();
         search:
         for (PackageInfo pkg : packages) {
             if (pkg.providers != null) {
                 for (ProviderInfo provider : pkg.providers) {
                     if (provider.authority != null) {
                         if (provider.authority.endsWith(".org.opencabstandard.hos")) {
+                            Gson gson = new Gson();
                             ContentResolver resolver = getApplicationContext().getContentResolver();
                             Uri authority = Uri.parse("content://" + provider.authority);
                             Bundle result;
@@ -126,43 +130,93 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d(LOG_TAG, "Got result!");
                                 result.setClassLoader(HOSContract.class.getClassLoader());
 
-                                Version maxSupportedVersion = new Version("0.3");
-                                Version resultVersion;
+                                Version supportedVersionV4 = new Version("0.4");
+                                Version supportedVersionV3 = new Version("0.3");
+                                Version supportedVersionV2 = new Version("0.2");
+                                Version resultVersion = null;
                                 if (result.containsKey(HOSContract.KEY_VERSION) && result.get(HOSContract.KEY_VERSION) != null) {
                                     resultVersion = new Version(result.getString(HOSContract.KEY_VERSION));
                                 } else {
-                                    resultVersion = new Version("0.3");
+                                    resultVersion = supportedVersionV2;
                                 }
-                                if (resultVersion.compareTo(maxSupportedVersion) >= 1) {
-                                    adapterHos.insert(dateTime + " : " + "Version " + resultVersion + " is not supported", 0);
-                                } else if (result.containsKey(HOSContract.KEY_HOS)) {
-                                    HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_HOS);
-                                    if (hosStatus != null) {
-                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
-                                        for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
-                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                //Support for version 0.2(before versioning was introduced)
+                                if (resultVersion.compareTo(supportedVersionV2) == 0) {
+                                    if (result.containsKey(HOSContract.KEY_HOS)) {
+                                        HOSContract.HOSStatus hosStatus = result.getParcelable(HOSContract.KEY_HOS);
+                                        if (hosStatus != null) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction(), 0);
+                                            for (HOSContract.Clock clock : hosStatus.getClocks()) {
+                                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue(), 0);
+                                            }
                                         }
+                                    } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                        String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                        Log.d(LOG_TAG, "Error: " + error);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
                                     }
-                                } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
-                                    String error = result.getString(VehicleInformationContract.KEY_ERROR);
-                                    Log.d(LOG_TAG, "Error: " + error);
-                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
-                                }
-                                if (result.containsKey(HOSContract.KEY_TEAM_HOS)) {
-                                    ArrayList<HOSContract.HOSStatusV2> hosStatusList = result.getParcelableArrayList(HOSContract.KEY_TEAM_HOS);
-                                    if (hosStatusList != null && hosStatusList.size() > 0) {
-                                        for (HOSContract.HOSStatusV2 item : hosStatusList) {
-                                            if (item.getClocks() != null) {
-                                                for (HOSContract.ClockV2 clock : item.getClocks()) {
-                                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                //Support for Version 0.3
+                                } else if (resultVersion.compareTo(supportedVersionV3) == 0) {
+                                    if (result.containsKey(HOSContract.KEY_HOS)) {
+                                        HOSContract.HOSStatusV2 hosStatus = result.getParcelable(HOSContract.KEY_HOS);
+                                        if (hosStatus != null) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
+                                            for (HOSContract.ClockV2 clock : hosStatus.getClocks()) {
+                                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                            }
+                                        }
+                                    } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                        String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                        Log.d(LOG_TAG, "Error: " + error);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                    }
+                                    if (result.containsKey(HOSContract.KEY_TEAM_HOS)) {
+                                        ArrayList<HOSContract.HOSStatusV2> hosStatusList = result.getParcelableArrayList(HOSContract.KEY_TEAM_HOS);
+                                        if (hosStatusList != null && hosStatusList.size() > 0) {
+                                            for (HOSContract.HOSStatusV2 item : hosStatusList) {
+                                                if (item.getClocks() != null) {
+                                                    for (HOSContract.ClockV2 clock : item.getClocks()) {
+                                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                                    }
                                                 }
                                             }
                                         }
+                                    } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                        String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                        Log.d(LOG_TAG, "Error: " + error);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
                                     }
-                                } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
-                                    String error = result.getString(VehicleInformationContract.KEY_ERROR);
-                                    Log.d(LOG_TAG, "Error: " + error);
-                                    adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                //Support for Version 0.4
+                                } else if (resultVersion.compareTo(supportedVersionV4) == 0) {
+                                    if (result.containsKey(HOSContract.KEY_HOS)) {
+                                        HOSContract.HOSData hosStatus = gson.fromJson(result.getString(HOSContract.KEY_HOS), HOSContract.HOSData.class);
+                                        if (hosStatus != null) {
+                                            adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Username: " + hosStatus.getUsername() +", Manage Action: " + hosStatus.getManageAction() + ", Logout Action: " + hosStatus.getLogoutAction() + ", KEY_VERSION: " + (result.containsKey(HOSContract.KEY_VERSION) ? result.getString(HOSContract.KEY_VERSION) : "null"), 0);
+                                            for (HOSContract.ClockData clock : hosStatus.getClocks()) {
+                                                adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                            }
+                                        }
+                                    } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                        String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                        Log.d(LOG_TAG, "Error: " + error);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                    }
+                                    if (result.containsKey(HOSContract.KEY_TEAM_HOS)) {
+                                        HOSContract.HOSTeamData teamHOSData = gson.fromJson((result.getString(HOSContract.KEY_TEAM_HOS)), HOSContract.HOSTeamData.class);
+                                        ArrayList<HOSContract.HOSData> hosStatusList = teamHOSData.getTeamHosData();
+                                        if (hosStatusList != null && hosStatusList.size() > 0) {
+                                            for (HOSContract.HOSData item : hosStatusList) {
+                                                if (item.getClocks() != null) {
+                                                    for (HOSContract.ClockData clock : item.getClocks()) {
+                                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Label: " + clock.getLabel() + ", Value: " + clock.getValue() + ", Duration: " + clock.getDurationSeconds(), 0);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else if (result.containsKey(VehicleInformationContract.KEY_ERROR)) {
+                                        String error = result.getString(VehicleInformationContract.KEY_ERROR);
+                                        Log.d(LOG_TAG, "Error: " + error);
+                                        adapterHos.insert(dateTime + " : " + "Package: " + provider.packageName + ", Error: " + error, 0);
+                                    }
                                 }
                             } else {
                                 Log.d(LOG_TAG, "Result from provider is null.");

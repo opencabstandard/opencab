@@ -21,6 +21,107 @@ public class HOSUtil {
         return response;
     }
 
+    public static HOSContract.HOSTeamData getTeamHOSData(Context context) {
+        ArrayList<HOSContract.HOSData> response = new ArrayList<>();
+        response.add(getHOSData(context, true, "OPENCAB_TEAM_DRIVER_1"));
+        response.add(getHOSData(context, true, "OPENCAB_TEAM_DRIVER_2"));
+        HOSContract.HOSTeamData data = new HOSContract.HOSTeamData();
+        data.setTeamHosData(response);
+        return data;
+    }
+
+    public static HOSContract.HOSData getHOSData(Context context) {
+        return getHOSData(context, false, null);
+    }
+
+
+
+    public static HOSContract.HOSData getHOSData(Context context, boolean isTeamDriver, String userName) {
+        long currentMillis = System.currentTimeMillis();
+        Date currentMillisDate = new Date(currentMillis);
+
+        String username = isTeamDriver ? userName : Preferences.getUsername(context);
+        String duty = null;
+        Date date = new Date();
+        String label = null;
+        boolean useDurationSeconds = false;
+        boolean limit = false;
+        switch (Preferences.getDutyStatus(context)) {
+            case "d":
+                duty = "D";
+                date = addHoursToDate(currentMillisDate, 11);
+                label = "Drive Time Remaining";
+                limit = true;
+                break;
+            case "on":
+                duty = "ON";
+                date = addHoursToDate(currentMillisDate, 7);
+                label = "On Duty Time Remaining";
+                useDurationSeconds = true;
+                break;
+            case "off":
+                duty = "OFF";
+                date = addHoursToDate(currentMillisDate, 9);
+                label = "Rest Time Remaining";
+                break;
+        }
+        ArrayList<HOSContract.ClockData> clocks = new ArrayList<>();
+        HOSContract.ClockData item1 = new HOSContract.ClockData();
+        item1.setLabel("Duty Status");
+        item1.setValueType(HOSContract.ClockData.ValueType.STRING);
+        item1.setValue(duty);
+        clocks.add(item1);
+        HOSContract.ClockData item2 = new HOSContract.ClockData();
+        item2.setLabel(label);
+        item2.setValueType(HOSContract.ClockData.ValueType.COUNTDOWN);
+        item2.setLimitsDrivingRange(limit);
+
+        SimpleDateFormat format = new SimpleDateFormat(HOSProvider.DATE_FORMAT);
+        item2.setValue(format.format(date));
+        item2.setImportant(true);
+        clocks.add(item2);
+
+        HOSContract.ClockData item3 = new HOSContract.ClockData();
+        item3.setLabel("User");
+        item3.setValueType(HOSContract.ClockData.ValueType.STRING);
+        item3.setValue(username);
+        clocks.add(item3);
+
+        HOSContract.ClockData item4 = new HOSContract.ClockData();
+        item4.setLabel("Time since Rest");
+        item4.setValueType(HOSContract.ClockData.ValueType.COUNTUP);
+        Long time = new Date().getTime();
+        Date midnight = new Date(time - time % (24 * 60 * 60 * 1000));
+        item4.setValue(format.format(midnight));
+        clocks.add(item4);
+
+        HOSContract.ClockData item5 = new HOSContract.ClockData();
+        item5.setLabel(HOS_DURATION_CLOCK_LABEL);
+        item5.setValueType(HOSContract.ClockData.ValueType.STRING);
+        long dateMillis = (date.getTime() - new Date().getTime()) / 1000;
+        item5.setValue(String.format("%02d:%02d", dateMillis / 60 / 60, dateMillis / 60 % 60));
+        item5.setDurationSeconds(new Double(dateMillis));
+        item5.setLimitsDrivingRange(useDurationSeconds);
+        clocks.add(item5);
+
+        HOSContract.ClockData item6 = new HOSContract.ClockData();
+        item6.setLabel("Today's Date");
+        item6.setValueType(HOSContract.ClockData.ValueType.DATE);
+        String strDate = format.format(new Date());
+        item6.setValue(strDate);
+        clocks.add(item6);
+
+        HOSContract.HOSData hosData = new HOSContract.HOSData();
+        hosData.setUsername(username);
+        hosData.setClocks(clocks);
+        if (Preferences.isManageAction(context)) {
+            String logoutAction = Preferences.getToggleLogoutAction(context) ? "googlechrome://navigate?url=google.com" : "hos://com.eleostech.opencabprovider/hos";
+            hosData.setManageAction("hos://com.eleostech.opencabprovider/hos");
+            hosData.setLogoutAction(logoutAction);
+        }
+        return hosData;
+    }
+
     public static HOSContract.HOSStatusV2 getHOSStatusV2(Context context) {
         return getHOSStatusV2(context, false, null);
     }

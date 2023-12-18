@@ -23,8 +23,18 @@ public class HOSProvider extends AbstractHOSProvider {
     }
 
     @Override
+    protected HOSContract.HOSData getHOSData() {
+        return HOSUtil.getHOSData(getContext());
+    }
+
+    @Override
     protected ArrayList<HOSContract.HOSStatusV2> getTeamHOSV2() {
         return HOSUtil.getHOSStatusTeamV2(getContext());
+    }
+
+    @Override
+    protected HOSContract.HOSTeamData getHOSTeamData() {
+        return HOSUtil.getTeamHOSData(getContext());
     }
 
     @Override
