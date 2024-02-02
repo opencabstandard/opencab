@@ -192,6 +192,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggle_delay_hos_response_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:checked="false"
+            android:text="Toggle HOS response delay" />
+
     </LinearLayout>
 
     <TextView

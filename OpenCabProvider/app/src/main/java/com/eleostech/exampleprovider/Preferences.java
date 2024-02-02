@@ -31,6 +31,8 @@ public class Preferences {
 
     private static final String PREFS_TOGGLE_LOGOUT_ACTION = "PREFS_TOGGLE_LOGOUT_ACTION";
 
+    private static final String PREFS_TOGGLE_DELAY_HOS_RESPONSE = "PREFS_TOGGLE_HOS_RESPONSE";
+
     public static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
@@ -144,6 +146,16 @@ public class Preferences {
 
     public static boolean getToggleLogoutAction(Context context) {
         return getPreferences(context).getBoolean(PREFS_TOGGLE_LOGOUT_ACTION, false);
+    }
+
+    public static boolean getToggleDelayHosResponse(Context context) {
+        return getPreferences(context).getBoolean(PREFS_TOGGLE_DELAY_HOS_RESPONSE, false);
+    }
+
+    public static void setToggleDelayHosResponse(Context context, boolean delay) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putBoolean(PREFS_TOGGLE_DELAY_HOS_RESPONSE, delay);
+        editor.commit();
     }
 
     public static boolean isManageAction(Context context) {

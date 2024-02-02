@@ -130,10 +130,16 @@ public class MainActivity extends AppCompatActivity {
 
         binding.identityProviderTeamDriverSwitch.setOnClickListener(v -> updateIdentityProviderTeamDriver());
         Preferences.setIdentityResponseToken(this, null);
+
+        binding.toggleDelayHosResponseSwitch.setOnClickListener(v -> updateToggleDelayHosResponseSwitch());
     }
 
     private void updateSendManageActionSwitch() {
         Preferences.setManageAction(this, binding.sendManageActionSwitch.isChecked());
+    }
+
+    private void updateToggleDelayHosResponseSwitch() {
+        Preferences.setToggleDelayHosResponse(this, binding.toggleDelayHosResponseSwitch.isChecked());
     }
 
     private void updateToggleLogoutActionSwitch() {

@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.util.Log;
+
 public class HOSUtil {
 
 
     private static final String HOS_DURATION_CLOCK_LABEL = "HOS Test Time";
+
+    private static final String LOG_TAG = HOSUtil.class.getCanonicalName();
 
     public static ArrayList<HOSContract.HOSStatusV2> getHOSStatusTeamV2(Context context) {
         ArrayList<HOSContract.HOSStatusV2> response = new ArrayList<>();
@@ -119,6 +123,13 @@ public class HOSUtil {
             hosData.setManageAction("hos://com.eleostech.opencabprovider/hos");
             hosData.setLogoutAction(logoutAction);
         }
+        if (Preferences.getToggleDelayHosResponse(context)) {
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+        }
         return hosData;
     }
 
@@ -208,6 +219,13 @@ public class HOSUtil {
             hosStatusV2.setManageAction("hos://com.eleostech.opencabprovider/hos");
             hosStatusV2.setLogoutAction(logoutAction);
         }
+        if (Preferences.getToggleDelayHosResponse(context)) {
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+        }
         return hosStatusV2;
     }
 
@@ -280,6 +298,13 @@ public class HOSUtil {
         hosStatus.setClocks(clocks);
         if (Preferences.isManageAction(context)) {
             hosStatus.setManageAction("hos://com.eleostech.opencabprovider/hos");
+        }
+        if (Preferences.getToggleDelayHosResponse(context)) {
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
         }
         return hosStatus;
     }
