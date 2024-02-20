@@ -1,6 +1,7 @@
 package com.eleostech.exampleprovider;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.opencabstandard.provider.HOSContract;
 
@@ -9,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.util.Log;
-
 public class HOSUtil {
 
 
@@ -18,17 +17,36 @@ public class HOSUtil {
 
     private static final String LOG_TAG = HOSUtil.class.getCanonicalName();
 
+    /**
+     * If "Add team driver(s) is checked, this will retrieve number of drivers requested and return
+     * an array of {@link HOSContract.HOSStatusV2}
+     * @param context
+     * @return
+     */
     public static ArrayList<HOSContract.HOSStatusV2> getHOSStatusTeamV2(Context context) {
         ArrayList<HOSContract.HOSStatusV2> response = new ArrayList<>();
-        response.add(getHOSStatusV2(context, true, "OPENCAB_TEAM_DRIVER_1"));
-        response.add(getHOSStatusV2(context, true, "OPENCAB_TEAM_DRIVER_2"));
+        if (Preferences.isIdentityProviderTeamDriverEnabled(context)) {
+            for (int i = 0; i < Preferences.getTeamsDriversNumber(context); i++) {
+                //this will return a Team driver with unique name
+                response.add(getHOSStatusV2(context, true, "OPENCAB_TEAM_DRIVER_" + (i + 1)));
+            }
+        }
         return response;
     }
 
+    /**
+     * If "Add team driver(s) is checked, this will retrieve number of drivers requested and return
+     * an array of {@link HOSContract.HOSTeamData}
+     * @param context
+     * @return
+     */
     public static HOSContract.HOSTeamData getTeamHOSData(Context context) {
         ArrayList<HOSContract.HOSData> response = new ArrayList<>();
-        response.add(getHOSData(context, true, "OPENCAB_TEAM_DRIVER_1"));
-        response.add(getHOSData(context, true, "OPENCAB_TEAM_DRIVER_2"));
+        if (Preferences.isIdentityProviderTeamDriverEnabled(context)) {
+            for (int i = 0; i < Preferences.getTeamsDriversNumber(context); i++) {
+                response.add(getHOSData(context, true, "OPENCAB_TEAM_DRIVER_" + (i + 1)));
+            }
+        }
         HOSContract.HOSTeamData data = new HOSContract.HOSTeamData();
         data.setTeamHosData(response);
         return data;
@@ -37,7 +55,6 @@ public class HOSUtil {
     public static HOSContract.HOSData getHOSData(Context context) {
         return getHOSData(context, false, null);
     }
-
 
 
     public static HOSContract.HOSData getHOSData(Context context, boolean isTeamDriver, String userName) {

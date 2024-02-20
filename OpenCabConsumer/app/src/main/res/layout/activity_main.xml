@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Click the button to fetch HOS information."
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/hos_button"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Click the button to fetch vehicle information."
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/vehicle_information_button"
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Click the button to fetch login credentials."
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/identity_provider_login_credentials_button"
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Click the button to fetch active drivers."
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/identity_active_driver_button"
@@ -103,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="View broadcasted events in the list below."
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <ListView
             android:id="@+id/broadcastListView"
