@@ -187,7 +187,7 @@ public class Preferences {
     }
 
     public static int getTeamsDriversNumber(Context context) {
-        return getPreferences(context).getInt(PREFS_TEAM_DRIVERS_NUMBER, 0);
+        return getPreferences(context).getInt(PREFS_TEAM_DRIVERS_NUMBER, 1);
     }
 
 }
