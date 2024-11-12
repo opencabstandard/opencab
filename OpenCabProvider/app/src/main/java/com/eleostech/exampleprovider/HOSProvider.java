@@ -61,4 +61,8 @@ public class HOSProvider extends AbstractHOSProvider {
         return Preferences.getHosVersion(getContext());
     }
 
+    @Override
+    protected int getTeamsDriversNumber() {
+        return Preferences.getTeamsDriversNumber(getContext());
+    }
 }

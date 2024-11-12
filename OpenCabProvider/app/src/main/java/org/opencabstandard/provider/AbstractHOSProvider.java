@@ -237,4 +237,11 @@ public abstract class AbstractHOSProvider extends ContentProvider {
      */
     protected abstract String getHosVersion();
 
+    /**
+     * Implement this to control how many team drivers will be returned to the consumer app.
+     *
+     * @return
+     */
+    protected abstract int getTeamsDriversNumber();
+
 }

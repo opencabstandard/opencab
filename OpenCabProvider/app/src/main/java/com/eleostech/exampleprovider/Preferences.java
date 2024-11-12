@@ -25,6 +25,8 @@ public class Preferences {
     private static final String PREFS_IDENTITY_PROVIDER_TOKEN = "PREFS_IDENTITY_PROVIDER_TOKEN";
 
     private static final String PREFS_HOS_VERSION = "PREFS_HOS_VERSION";
+
+    private static final String PREFS_TEAM_DRIVERS_NUMBER = "PREFS_TEAM_DRIVERS_NUMBER";
     private static final String PREFS_IDENTITY_PROVIDER_TEAM_DRIVER = "PREFS_IDENTITY_PROVIDER_TEAM_DRIVER";
 
     private static final String PREFS_MANAGE_ACTION = "PREFS_MANAGE_ACTION";
@@ -177,4 +179,15 @@ public class Preferences {
     public static String getHosVersion(Context context) {
         return getPreferences(context).getString(PREFS_HOS_VERSION, null);
     }
+
+    public static void setTeamDriversNumber(Context context, int teamDriversNumber) {
+        SharedPreferences.Editor editor = getPreferencesEditor(context);
+        editor.putInt(PREFS_TEAM_DRIVERS_NUMBER, teamDriversNumber);
+        editor.commit();
+    }
+
+    public static int getTeamsDriversNumber(Context context) {
+        return getPreferences(context).getInt(PREFS_TEAM_DRIVERS_NUMBER, 1);
+    }
+
 }

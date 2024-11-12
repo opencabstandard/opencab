@@ -89,10 +89,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.broadcastEventSpinner.setAdapter(adapter);
 
-
         ArrayAdapter<CharSequence> adapterHosVersion = ArrayAdapter.createFromResource(this, R.array.hos_versions, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.hosClocksVersionSpinner.setAdapter(adapterHosVersion);
+
+        ArrayAdapter<CharSequence> adapterTeamDriversNumber = ArrayAdapter.createFromResource(this, R.array.team_drivers_number, android.R.layout.simple_spinner_item);
+        adapterTeamDriversNumber.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.teamDriversNumberSpinner.setAdapter(adapterTeamDriversNumber);
 
         binding.hosClocksVersionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -105,6 +108,19 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        binding.teamDriversNumberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Preferences.setTeamDriversNumber(getApplicationContext(), Integer.valueOf(binding.teamDriversNumberSpinner.getSelectedItem().toString()));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         binding.identityProviderTokenTypeSwitch.setOnClickListener(v -> updateIdentityProviderTokenType());
 
         binding.identityProviderTokenTextedit.addTextChangedListener(new TextWatcher() {

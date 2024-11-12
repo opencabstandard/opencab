@@ -158,7 +158,24 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:checked="false"
-            android:text="Add team driver" />
+            android:text="Add team driver(s)" />
+
+        <TextView
+            android:id="@+id/team_drivers_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:text="Number of team drivers to send to consumer:"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:layout_marginTop="14dp" />
+
+        <Spinner
+            android:id="@+id/team_drivers_number_spinner"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/send_manage_Action_switch"
@@ -184,6 +201,7 @@
             android:layout_alignParentEnd="true"
             android:text="Force HOS Version:"
             android:textSize="14dp"
+            android:textStyle="bold"
             android:layout_marginTop="14dp" />
 
         <Spinner
