@@ -115,5 +115,20 @@
             android:dividerHeight="1dp"
             android:fadingEdge="vertical"></ListView>
 
+        <Button
+            android:id="@+id/clear_broadcastListView"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:text="Clear Events" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/disable_identity_receiver_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Toggle Identity Receiver"
+            android:checked="true"/>
+
     </LinearLayout>
 </RelativeLayout>
