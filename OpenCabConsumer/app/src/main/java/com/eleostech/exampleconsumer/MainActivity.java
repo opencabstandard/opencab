@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.eleostech.exampleconsumer.databinding.ActivityMainBinding;
 import com.eleostech.exampleconsumer.receiver.IdentityChangedReceiver;
+import com.eleostech.exampleconsumer.receiver.VehicleInformationChangedReceiver;
 import com.google.gson.Gson;
 
 import org.opencabstandard.provider.HOSContract;
@@ -69,9 +70,13 @@ public class MainActivity extends AppCompatActivity {
         adapterActiveDrivers = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         binding.activeDriversListView.setAdapter(adapterActiveDrivers);
 
-        int componentEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(this, IdentityChangedReceiver.class));
-        binding.disableIdentityReceiverSwitch.setChecked(componentEnabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT || componentEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
-        binding.disableIdentityReceiverSwitch.setOnClickListener(v -> toggleIdentityReceiverEnabled());
+        int identityReceiverEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(this, IdentityChangedReceiver.class));
+        binding.disableIdentityReceiverSwitch.setChecked(identityReceiverEnabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT || identityReceiverEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+        binding.disableIdentityReceiverSwitch.setOnClickListener(v -> toggleReceiverEnabled(IdentityChangedReceiver.class));
+
+        int vehicleReceiverEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(this, VehicleInformationChangedReceiver.class));
+        binding.disableVehicleReceiverSwitch.setChecked(vehicleReceiverEnabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT || vehicleReceiverEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+        binding.disableVehicleReceiverSwitch.setOnClickListener(v -> toggleReceiverEnabled(VehicleInformationChangedReceiver.class));
     }
 
     @Override
@@ -110,12 +115,12 @@ public class MainActivity extends AppCompatActivity {
         adapterBroadcastedEvents.clear();
     }
 
-    private void toggleIdentityReceiverEnabled() {
-        int componentEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(this, IdentityChangedReceiver.class));
+    private void toggleReceiverEnabled(Class receiver) {
+        int componentEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(this, receiver));
         if (componentEnabled == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT || componentEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
-            getPackageManager().setComponentEnabledSetting(new ComponentName(this, IdentityChangedReceiver.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            getPackageManager().setComponentEnabledSetting(new ComponentName(this, receiver), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         } else {
-            getPackageManager().setComponentEnabledSetting(new ComponentName(this, IdentityChangedReceiver.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            getPackageManager().setComponentEnabledSetting(new ComponentName(this, receiver), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         }
     }
 
