@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-# Test with: docker run --rm -it amazonlinux:2023.8.20250715.0⁠ sh
+# Test with: docker run --rm -it amazonlinux:2023.8.20250715.0⁠ /bin/bash
 yum --assumeyes install wget unzip java-17-amazon-corretto-devel
 
 wget --quiet -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
