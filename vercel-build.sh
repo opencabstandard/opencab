@@ -15,4 +15,7 @@ cmdline-tools/bin/sdkmanager --sdk_root=android-sdk/ "platform-tools" "platforms
 
 export LANG=en_US.UTF-8
 cd OpenCabProvider
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+export LANGUAGE=C.UTF-8
 ANDROID_SDK_ROOT=../android-sdk/ ./build-docs.sh
