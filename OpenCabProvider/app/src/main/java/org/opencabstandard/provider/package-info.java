@@ -1,4 +1,5 @@
 /**
+ * <h2>OpenCab Providers</h2>
  * This package contains the Java interface files that define the contracts for OpenCab
  * <i>providers</i>, the data types communicated to and from those providers, as well as abstract
  * implementations that reduce the boilerplate code needed for an implementation.
