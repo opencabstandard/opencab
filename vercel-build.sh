@@ -1,14 +1,8 @@
 #!/bin/bash
 set -ex
 
-# Test with: docker run --rm -it amazonlinux:2.0.20191217.0 sh
-<<<<<<< HEAD
-yum install wget unzip
-amazon-linux-extras install java-openjdk11
-yum install java-11-openjdk-devel
-=======
-yum install wget unzip java-17-amazon-corretto-devel
->>>>>>> 1b709f3 (Fixes for Java 17)
+# Test with: docker run --rm -it amazonlinux:2023.8.20250715.0⁠ sh
+yum --assumeyes install wget unzip java-17-amazon-corretto-devel
 
 wget --quiet -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
 unzip android.zip
