@@ -53,6 +53,7 @@ task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     // Change to main-stylesheet to not use any default styles
     options.addStringOption("encoding", "UTF-8")
+    options.addStringOption("docencoding", "UTF-8")
     options.addStringOption("-add-stylesheet", "../../website/main.css")
     options.addBooleanOption("-allow-script-in-comments", true)
     options.addStringOption("overview", "../../website/overview.html")
