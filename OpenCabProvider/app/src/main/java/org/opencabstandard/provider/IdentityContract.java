@@ -247,7 +247,24 @@ public final class IdentityContract {
     }
 
     /**
-     * Object containing the driver session.
+     * A plain old Java object representing a login session information.
+     *
+     * <p>This is a convenience data class that both providers and consumers can use to
+     * represent login session information shared between apps as part of the Identity contract.
+     *
+     * <p>In particular, this class handles serializing and deserializing the data returned from
+     * to (for the provider app) and from (for the consumer app) the actual {@link android.os.Bundle} returned
+     * when a consumer calls {@link #METHOD_GET_LOGIN_CREDENTIALS}.
+     *
+     * <p>Since the actual value passed between a provider and consumer app is an Android {@link android.os.Bundle},
+     * the setters on this class are for convenience in constructing an object. Calling one of the setters
+     * in a consumer app has no effect on the provider, and vice versa. To signal changes to the active driver
+     * information, provider apps should publish a {@link #ACTION_DRIVER_LOGIN}, {@link #ACTION_DRIVER_LOGOUT},
+     * or {@link #ACTION_IDENTITY_INFORMATION_CHANGED} event and begin returning updated information
+     * from {@link #METHOD_GET_LOGIN_CREDENTIALS} when requested.
+     *
+     * <p>The use of this class is optional, so long as providers and consumers honor the same parceling order for
+     * the object's properties.
      */
     public static class DriverSession implements Parcelable {
 
@@ -342,6 +359,10 @@ public final class IdentityContract {
          * An authentication token that can be used to uniquely and securely identify the driver.
          * For more details about possible types of tokens, see {@link IdentityContract}.
          *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
+         *
          * @param token The login token
          */
         public void setToken(String token) {
@@ -350,6 +371,10 @@ public final class IdentityContract {
 
         /**
          * The package name of the OpenCab identity provider.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
          *
          * @param provider The provider package name.
          */
@@ -360,6 +385,10 @@ public final class IdentityContract {
         /**
          * A URL that can be used to authenticate the login token.
          * For more details about how OpenCab interacts with authentication systems, see {@link IdentityContract}.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing an instance of this class. It has no effect if called
+         * on a {@link LoginCredentials} object in a consumer app.
          *
          * @param authority The authority URL.
          */
@@ -428,7 +457,23 @@ public final class IdentityContract {
     }
 
     /**
-     * Object representing a Driver.
+     * A plain old Java object representing a Driver.
+     *
+     * <p>This is a convenience data class that both providers and consumers can use to
+     * represent the driver information shared between apps as part of the Identity contract.
+     *
+     * <p>In particular, this class handles serializing and deserializing the data returned from
+     * to (for the provider app) and from (for the consumer app) the actual {@link android.os.Bundle} returned
+     * when a consumer calls {@link #METHOD_GET_ACTIVE_DRIVERS}.
+     *
+     * <p>Since the actual value passed between a provider and consumer app is an Android {@link android.os.Bundle},
+     * the setters on this class are for convenience in constructing an object. Calling one of the setters
+     * in a consumer app has no effect on the provider, and vice versa. To signal changes to the active driver
+     * information, provider apps should publish a {@link #ACTION_DRIVER_LOGIN} or {@link #ACTION_DRIVER_LOGOUT}
+     * event and begin returning updated information from {@link #METHOD_GET_ACTIVE_DRIVERS} when requested.
+     *
+     * <p>The use of this class is optional, so long as providers and consumers honor the same parceling order for
+     * the object's properties.
      */
     public static class Driver implements Parcelable {
 
@@ -436,7 +481,34 @@ public final class IdentityContract {
         private boolean driving;
 
         /**
-         * Set the driver username.
+         * Set the driver username. A username can be any string defined by an
+         * identity provider which MUST 1) have a one-to-one correspondence to a person or user AND
+         * 2) MUST remain stable during a login session. It does not necessarily need to be
+         * human-readable or directly correspond to a login username.
+         *
+         * <p>A username need only be unique for a single {@link AUTHORITY}.
+         *
+         * <p>Username MUST be treated as case-sensitive for the purposes of comparison.
+         *
+         * <p>Providers MAY convert usernames to
+         * upper or lowercase to normalize case if the letter case is otherwise unpredictable.
+         *
+         * <p>This MUST NOT be used by consumer apps for identifying a driver or login session.
+         * Username SHOULD be used as a stable identifier for detecting changes to other properties,
+         * such as {@link Driver#isDriving}, when multiple drivers are active at the same time.
+         *
+         * <p>In other words, if a consumer app detects a change
+         * to the usernames of the drivers returned by {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * it MUST be because the set of active users or drivers has logically changed, e.g.,
+         * a driver logged in or out.
+         *
+         * <p>For example, the order in which two drivers are returned in {@link #KEY_ACTIVE_DRIVERS}
+         * might change. The respective usernames of those two drivers can be used to determine that
+         * there is no real change in the set of users operating the app or vehicle if this occurs.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing a Driver instance. It has no effect if called
+         * on a {@link Driver} object in a consumer app.
          *
          * @param user The username of the driver.
          */
@@ -445,7 +517,8 @@ public final class IdentityContract {
         }
 
         /**
-         * Get the username of the driver.
+         * Get the username of the driver. See {@link #setUsername} for details about possible
+         * values and how to make use of them.
          *
          * @return The username of the driver.
          */
@@ -456,6 +529,12 @@ public final class IdentityContract {
         /**
          * Is this driver currently operating the vehicle?
          *
+         * <p>Consumer apps can use the indication that driving is "true" to lock portions of their
+         * user interface to reduce driver distraction. In addition, in a team-driving scenario
+         * where multiple Driver instances are returned from {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * a consumer app can keep track of the username of the driver marked as "driving" and
+         * update settings or preferences to reflect a change in the active driver.
+         *
          * @return Boolean indicating whether this driver is operating the vehicle.
          */
         public boolean isDriving() {
@@ -465,6 +544,16 @@ public final class IdentityContract {
         /**
          * Indicate that this driver is currently operating the vehicle.  If false, the driver is
          * a co-driver.
+         *
+         * <p>Consumer apps can use the indication that driving is "true" to lock portions of their
+         * user interface to reduce driver distraction. In addition, in a team-driving scenario
+         * where multiple Driver instances are returned from {@link #METHOD_GET_ACTIVE_DRIVERS},
+         * a consumer app can keep track of the username of the driver marked as "driving" and
+         * update settings or preferences to reflect a change in the active driver.
+         *
+         * <p>This is a convenience method for use by provider apps in
+         * constructing a Driver instance. It has no effect on a driver's status if called
+         * on a {@link Driver} object in a consumer app.
          *
          * @param status Boolean indicating if this driver is operating the vehicle.
          */
