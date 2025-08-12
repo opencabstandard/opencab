@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * <h2>Identity Contract Provider</h2>
  * Defines the contract for the OpenCab Identity Content provider. An OpenCab Identity provider app should
  * define an Android {@link android.content.ContentProvider} class
  * that follows this contract or should subclass the {@link AbstractIdentityProvider} class and

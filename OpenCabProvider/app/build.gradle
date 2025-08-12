@@ -52,10 +52,12 @@ dependencies {
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     // Change to main-stylesheet to not use any default styles
+    options.addStringOption("encoding", "UTF-8")
+    options.addStringOption("docencoding", "UTF-8")
     options.addStringOption("-add-stylesheet", "../../website/main.css")
     options.addBooleanOption("-allow-script-in-comments", true)
     options.addStringOption("overview", "../../website/overview.html")
-    options.addStringOption("header", '<a href="/" ><img class="logo" src="https://opencabstandard.org/wp-content/uploads/2021/03/OpenCab_Logo_White.png" height="25"></a>')
+    options.addStringOption("header", '<a href="https://opencabstandard.org" ><img class="logo" src="https://opencabstandard.org/wp-content/uploads/2021/03/OpenCab_Logo_White.png" height="25"></a>')
     options.addStringOption("bottom", '<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script></script><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script>');
     options.addStringOption("doctitle", "OpenCab — Android API")
     exclude "com/*"

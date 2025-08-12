@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <h2>HOS Contract Provider</h2>
  * Defines the contract for the OpenCab HOS Content provider.  An OpenCab HOS provider app should define
  * an Android {@link android.content.ContentProvider} class that follows this contract or should extend
  * the {@link AbstractHOSProvider} class and implement the abstract methods.
