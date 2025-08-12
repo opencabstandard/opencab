@@ -1,7 +1,8 @@
 #!/bin/bash
 set -ex
 
-# Test with: docker run --rm -it amazonlinux:2023.8.20250715.0⁠ /bin/bash
+# Test with: docker run -v $PWD:/src --workdir /src --rm -it amazonlinux:2023.8.20250715.0 /bin/bash
+# cd OpenCabProvider/app/build/docs/javadoc/; python -m http.server 8085
 yum --assumeyes install wget unzip java-17-amazon-corretto-devel
 
 wget --quiet -O android.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
