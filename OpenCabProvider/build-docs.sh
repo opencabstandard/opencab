@@ -6,7 +6,7 @@ set -ex
 
 if [ "$VERCEL_ENV" != "production" ]; then
     cat << EOF >> ../website/main.css
-.fixedNav::before {
+header::before {
     text-align: center;
     content: "Draft Proposal — For Review Only";
     background-color: hsl(45, 100%, 55%);
