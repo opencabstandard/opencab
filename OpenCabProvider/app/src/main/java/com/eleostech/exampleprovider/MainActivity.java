@@ -10,8 +10,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,15 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.eleostech.opencabprovider.R;
 import com.eleostech.opencabprovider.databinding.ActivityMainBinding;
 
-import org.opencabstandard.provider.HOSContract;
 import org.opencabstandard.provider.IdentityContract;
 import org.opencabstandard.provider.VehicleInformationContract;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
@@ -38,42 +36,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (Preferences.getDutyStatus(this) == null) {
+            Preferences.setDutyStatus(this, "off");
+        }
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.vehicleInformationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = binding.username.getText().toString();
-                if (username != null && username.length() > 0) {
-                    login(username);
-                } else {
-                    Toast.makeText(MainActivity.this, "Please enter username.", Toast.LENGTH_LONG).show();
-                }
+        binding.vehicleInformationButton.setOnClickListener(v -> {
+            String username = binding.username.getText().toString();
+            if (username != null && username.length() > 0) {
+                login(username);
+            } else {
+                Toast.makeText(MainActivity.this, "Please enter username.", Toast.LENGTH_LONG).show();
             }
         });
 
-        binding.logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
+        binding.logoutButton.setOnClickListener(v -> logout());
 
-        binding.switchDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchDriver();
-            }
-        });
+        binding.switchDriverButton.setOnClickListener(v -> switchDriver());
 
-        binding.broadcastEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                broadCastEvent();
-            }
-        });
+        binding.broadcastEventButton.setOnClickListener(view1 -> broadCastEvent());
 
         String username = Preferences.getUsername(this);
         if (username != null) {
@@ -85,69 +68,60 @@ public class MainActivity extends AppCompatActivity {
             binding.logoutContainer.setVisibility(View.GONE);
         }
 
-        binding.statusDriving.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("driving");
-            }
-        });
+        binding.statusDriving.setOnClickListener(v -> setDutyStatus("d"));
 
-        binding.statusOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("on");
-            }
-        });
+        binding.statusOn.setOnClickListener(v -> setDutyStatus("on"));
 
-        binding.statusOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDutyStatus("off");
-            }
-        });
+        binding.statusOff.setOnClickListener(v -> setDutyStatus("off"));
 
-        if (Preferences.getHOS(this) != null) {
-            String status = null;
-            String json = Preferences.getHOS(this);
+        if (Preferences.getDutyStatus(this) != null) {
+            String status;
+            status = Preferences.getDutyStatus(this);
 
-            HOSContract.HOSStatus hstatus = HOSProvider.createGson().fromJson(json, HOSContract.HOSStatus.class);
-            List<HOSContract.Clock> clocks = hstatus.getClocks();
-
-            for (HOSContract.Clock cl : clocks) {
-                if (cl.getLabel().equals("Duty Status")) {
-                    status = cl.getValue();
-                    break;
-                }
-            }
+            setDutyStatus(status);
 
             Log.d(LOG_TAG, "Found status: " + status);
-            switch (status) {
-                case "D":
-                    binding.statusDriving.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-                case "ON":
-                    binding.statusOn.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-                case "OFF":
-                    binding.statusOff.setBackgroundColor(getColor(R.color.status_active));
-                    break;
-
-            }
         } else {
             setDutyStatus("off");
         }
 
-        Spinner spinner = (Spinner) findViewById(R.id.broadcast_event_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.broadcast_events, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        binding.broadcastEventSpinner.setAdapter(adapter);
 
-        binding.identityProviderTokenTypeSwitch.setOnClickListener(new View.OnClickListener() {
+        ArrayAdapter<CharSequence> adapterHosVersion = ArrayAdapter.createFromResource(this, R.array.hos_versions, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.hosClocksVersionSpinner.setAdapter(adapterHosVersion);
+
+        ArrayAdapter<CharSequence> adapterTeamDriversNumber = ArrayAdapter.createFromResource(this, R.array.team_drivers_number, android.R.layout.simple_spinner_item);
+        adapterTeamDriversNumber.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.teamDriversNumberSpinner.setAdapter(adapterTeamDriversNumber);
+
+        binding.hosClocksVersionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                updateIdentityProviderTokenType();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Preferences.setHosVersion(getApplicationContext(), binding.hosClocksVersionSpinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+
+        binding.teamDriversNumberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Preferences.setTeamDriversNumber(getApplicationContext(), Integer.valueOf(binding.teamDriversNumberSpinner.getSelectedItem().toString()));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        binding.identityProviderTokenTypeSwitch.setOnClickListener(v -> updateIdentityProviderTokenType());
 
         binding.identityProviderTokenTextedit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -166,7 +140,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.sendManageActionSwitch.setOnClickListener(v -> updateSendManageActionSwitch());
+
+        binding.toggleLogoutActionSwitch.setOnClickListener(v -> updateToggleLogoutActionSwitch());
+
+        binding.identityProviderTeamDriverSwitch.setOnClickListener(v -> updateIdentityProviderTeamDriver());
         Preferences.setIdentityResponseToken(this, null);
+
+        binding.toggleDelayHosResponseSwitch.setOnClickListener(v -> updateToggleDelayHosResponseSwitch());
+    }
+
+    private void updateSendManageActionSwitch() {
+        Preferences.setManageAction(this, binding.sendManageActionSwitch.isChecked());
+    }
+
+    private void updateToggleDelayHosResponseSwitch() {
+        Preferences.setToggleDelayHosResponse(this, binding.toggleDelayHosResponseSwitch.isChecked());
+    }
+
+    private void updateToggleLogoutActionSwitch() {
+        Preferences.setToggleLogoutAction(this, binding.toggleLogoutActionSwitch.isChecked());
     }
 
     private void saveToken(String text) {
@@ -183,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -194,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             binding.navigationState.setText("NAVIGATING: FALSE");
         }
+        Preferences.setHosVersion(this, binding.hosClocksVersionSpinner.getSelectedItem().toString());
     }
 
     private void login(final String username) {
@@ -206,21 +199,25 @@ public class MainActivity extends AppCompatActivity {
         setDutyStatus("off");
         addUser(username, false);
 
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
-        search:
-        for (PackageInfo pkg : packages) {
-            if (pkg.receivers != null) {
-                for (ActivityInfo activityInfo : pkg.receivers) {
-                    if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                        String packageName = pkg.packageName;
-                        String className = activityInfo.name;
-                        Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                        Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(packageName, className));
-                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
-                        getApplication().sendBroadcast(intent);
-                    }
-                }
+        HashMap<String, ActivityInfo> discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+
+        if (discoveredReceivers != null) {
+            for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                String key = entry.getKey();
+                ActivityInfo value = entry.getValue();
+                // If required by your use case or for security reasons, you can apply any
+                // package name-based filtering by checking `value.packageName` against
+                // a server-provided list. It is not recommended that you hard code any
+                // package names in your mobile implementation directly.
+                // See section 5, "Security," of the specification for more information.
+                Intent intent1 = new Intent();
+                intent1.setComponent(new ComponentName(value.packageName, key));
+                intent1.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
+                getApplication().sendBroadcast(intent1);
+                Intent intent2 = new Intent();
+                intent2.setComponent(new ComponentName(value.packageName, key));
+                intent2.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
+                getApplication().sendBroadcast(intent2);
             }
         }
     }
@@ -231,24 +228,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        binding.identityProviderTeamDriverSwitch.setChecked(false);
         Preferences.clear(this);
+
         binding.loginContainer.setVisibility(View.VISIBLE);
         binding.logoutContainer.setVisibility(View.GONE);
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
-        search:
-        for (PackageInfo pkg : packages) {
-            if (pkg.receivers != null) {
-                for (ActivityInfo activityInfo : pkg.receivers) {
-                    if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                        String packageName = pkg.packageName;
-                        String className = activityInfo.name;
-                        Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                        Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(packageName, className));
-                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
-                        getApplication().sendBroadcast(intent);
-                    }
-                }
+
+        HashMap<String, ActivityInfo> discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+
+        if (discoveredReceivers != null) {
+            for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                String key = entry.getKey();
+                ActivityInfo value = entry.getValue();
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(value.packageName, key));
+                intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
+                getApplication().sendBroadcast(intent);
             }
         }
     }
@@ -258,74 +253,19 @@ public class MainActivity extends AppCompatActivity {
         binding.statusDriving.setBackgroundColor(getColor(R.color.status_inactive));
         binding.statusOn.setBackgroundColor(getColor(R.color.status_inactive));
         binding.statusOff.setBackgroundColor(getColor(R.color.status_inactive));
-
-        String duty = null;
-        Date date = null;
-        String label = null;
-        boolean limit = false;
         switch (status) {
-            case "driving":
+            case "d":
                 binding.statusDriving.setBackgroundColor(getColor(R.color.status_active));
-                duty = "D";
-                date = addHoursToDate(new Date(), 12);
-                label = "Drive Time Remaining";
-                limit = true;
                 break;
             case "on":
                 binding.statusOn.setBackgroundColor(getColor(R.color.status_active));
-                duty = "ON";
-                date = addHoursToDate(new Date(), 8);
-                label = "On Duty Time Remaining";
                 break;
             case "off":
                 binding.statusOff.setBackgroundColor(getColor(R.color.status_active));
-                duty = "OFF";
-                date = new Date();
-                label = "Rest Time Remaining";
                 break;
+
         }
-
-        ArrayList<HOSContract.Clock> clocks = new ArrayList<>();
-        HOSContract.Clock item1 = new HOSContract.Clock();
-        item1.setLabel("Duty Status");
-        item1.setValueType(HOSContract.Clock.ValueType.STRING);
-        item1.setValue(duty);
-        clocks.add(item1);
-        HOSContract.Clock item2 = new HOSContract.Clock();
-        item2.setLabel(label);
-        item2.setValueType(HOSContract.Clock.ValueType.COUNTDOWN);
-        item2.setLimitsDrivingRange(limit);
-
-        SimpleDateFormat format = new SimpleDateFormat(HOSProvider.DATE_FORMAT);
-        item2.setValue(format.format(date));
-        clocks.add(item2);
-
-        String username = Preferences.getUsername(this);
-        HOSContract.Clock item3 = new HOSContract.Clock();
-        item3.setLabel("User");
-        item3.setValueType(HOSContract.Clock.ValueType.STRING);
-        item3.setValue(username);
-        clocks.add(item3);
-
-        HOSContract.Clock item4 = new HOSContract.Clock();
-        item4.setLabel("Time since Rest");
-        item4.setValueType(HOSContract.Clock.ValueType.COUNTUP);
-        item4.setValue(format.format(new Date()));
-        clocks.add(item4);
-
-        HOSContract.HOSStatus hosStatus = new HOSContract.HOSStatus();
-        hosStatus.setClocks(clocks);
-        hosStatus.setManageAction("hos://com.eleostech.opencabprovider/hos");
-
-        String json = HOSProvider.createGson().toJson(hosStatus);
-        Preferences.setHOS(this, json);
-    }
-
-    private Date addHoursToDate(Date date, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, hours);
-        return calendar.getTime();
+        Preferences.setDutyStatus(this, status);
     }
 
     private void addUser(String username, boolean driving) {
@@ -337,84 +277,93 @@ public class MainActivity extends AppCompatActivity {
         drivers.add(driver);
 
         Preferences.setActiveDrivers(this, drivers);
-
     }
 
     private void broadCastEvent() {
+        // See section 3.4, "Publishing broadcast intents," for specifics about
+        // this process.
         String event = binding.broadcastEventSpinner.getSelectedItem().toString();
         Log.d(LOG_TAG, "Broadcasting " + event + " event");
-        List<PackageInfo> packages = getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
+        HashMap<String, ActivityInfo> discoveredReceivers;
         switch (event) {
             case "ACTION_DRIVER_LOGOUT":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGOUT);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_DRIVER_LOGIN":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_DRIVER_LOGIN);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_IDENTITY_INFORMATION_CHANGED":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".IdentityChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(IdentityContract.IDENTITY_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(IdentityContract.ACTION_IDENTITY_INFORMATION_CHANGED);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             case "ACTION_VEHICLE_INFORMATION_CHANGED":
-                for (PackageInfo pkg : packages) {
-                    if (pkg.receivers != null) {
-                        for (ActivityInfo activityInfo : pkg.receivers) {
-                            if (activityInfo.name.endsWith(".VehicleInformationChangedReceiver")) {
-                                String packageName = pkg.packageName;
-                                String className = activityInfo.name;
-                                Log.d(LOG_TAG, "Broadcasting event to packageName: " + packageName + ", className: "+ className);
-                                Intent intent = new Intent();
-                                intent.setComponent(new ComponentName(packageName, className));
-                                intent.setAction(VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED);
-                                getApplication().sendBroadcast(intent);
-                            }
-                        }
+                discoveredReceivers = getReceivers(VehicleInformationContract.VEHICLE_INFORMATION_CHANGED_RECEIVER);
+                if (discoveredReceivers.size() > 0) {
+                    for (Map.Entry<String, ActivityInfo> entry : discoveredReceivers.entrySet()) {
+                        String key = entry.getKey();
+                        ActivityInfo value = entry.getValue();
+                        Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(value.packageName, key));
+                        intent.setAction(VehicleInformationContract.ACTION_VEHICLE_INFORMATION_CHANGED);
+                        getApplication().sendBroadcast(intent);
                     }
                 }
                 break;
             default:
                 // code block
         }
+    }
+
+    private HashMap<String, ActivityInfo> getReceivers(String type) {
+        // See section 3.4, "Publishing broadcast intents", for specifics about this
+        // enumeration process.
+        List<PackageInfo> packages = getApplication().getPackageManager().getInstalledPackages(PackageManager.GET_RECEIVERS);
+        HashMap<String, ActivityInfo> discoveredReceivers = new HashMap<>();
+        if (packages != null) {
+            for (PackageInfo packageInfo : packages) {
+                if (packageInfo.receivers != null) {
+                    for (ActivityInfo activityInfo : packageInfo.receivers) {
+                        if (activityInfo.name.endsWith("." + type)) {
+                            discoveredReceivers.put(activityInfo.name, activityInfo);
+                        }
+
+                    }
+                }
+            }
+        }
+        return discoveredReceivers;
+    }
+
+    private void updateIdentityProviderTeamDriver() {
+        Preferences.setIdentityProviderTeamDriver(this, binding.identityProviderTeamDriverSwitch.isChecked());
     }
 }

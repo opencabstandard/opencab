@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp">
+
     <LinearLayout
         android:id="@+id/login_container"
         android:layout_width="wrap_content"
@@ -13,24 +14,46 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Click the button to fetch HOS information."
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/hos_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:text="Call Provider" />
+
+        <ListView
+            android:id="@+id/hosListView"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:background="@color/colorAccent"
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:fadingEdge="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Click the button to fetch vehicle information."
             android:textSize="12dp" />
 
         <Button
             android:id="@+id/vehicle_information_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="right"
             android:text="Call Provider" />
 
         <ListView
             android:id="@+id/vehicleInformationListView"
             android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:background="@color/colorAccent"
             android:divider="#3F51B5"
             android:dividerHeight="1dp"
-            android:background="@color/colorAccent"
-            android:fadingEdge="vertical"
-            android:layout_height="100dp"/>
+            android:fadingEdge="vertical" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,18 +64,18 @@
         <Button
             android:id="@+id/identity_provider_login_credentials_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="right"
             android:text="Call Provider" />
 
         <ListView
             android:id="@+id/loginCredentialsListView"
             android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:background="@color/colorAccent"
             android:divider="#3F51B5"
             android:dividerHeight="1dp"
-            android:background="@color/colorAccent"
-            android:fadingEdge="vertical"
-            android:layout_height="100dp"/>
+            android:fadingEdge="vertical" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -63,18 +86,18 @@
         <Button
             android:id="@+id/identity_active_driver_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_gravity="right"
             android:text="Call Provider" />
 
         <ListView
             android:id="@+id/activeDriversListView"
             android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:background="@color/colorAccent"
             android:divider="#3F51B5"
             android:dividerHeight="1dp"
-            android:background="@color/colorAccent"
-            android:fadingEdge="vertical"
-            android:layout_height="100dp"/>
+            android:fadingEdge="vertical" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -85,14 +108,12 @@
         <ListView
             android:id="@+id/broadcastListView"
             android:layout_width="wrap_content"
-            android:divider="#3F51B5"
-            android:dividerHeight="1dp"
+            android:layout_height="80dp"
             android:layout_below="@id/login_container"
             android:background="@color/colorAccent"
-            android:fadingEdge="vertical"
-            android:layout_height="120dp">
-        </ListView>
+            android:divider="#3F51B5"
+            android:dividerHeight="1dp"
+            android:fadingEdge="vertical"></ListView>
 
     </LinearLayout>
-
 </RelativeLayout>

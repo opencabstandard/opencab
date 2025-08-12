@@ -6,7 +6,7 @@ set -ex
 
 if [ "$VERCEL_ENV" != "production" ]; then
     cat << EOF >> ../website/main.css
-.fixedNav::before {
+header::before {
     text-align: center;
     content: "Draft Proposal — For Review Only";
     background-color: hsl(45, 100%, 55%);
@@ -17,5 +17,5 @@ if [ "$VERCEL_ENV" != "production" ]; then
 EOF
 fi
 
-./gradlew javadoc
+./gradlew javadoc 2>&1
 cp -R ../website/images app/build/docs/javadoc

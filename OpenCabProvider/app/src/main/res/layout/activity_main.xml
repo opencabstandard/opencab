@@ -38,8 +38,8 @@
             android:id="@+id/welcome_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:textSize="30sp">
+            android:layout_marginBottom="12dp"
+            android:textSize="25sp">
 
         </TextView>
 
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Duty Status:"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -138,19 +138,85 @@
             android:id="@+id/identity_provider_token_type_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
             android:layout_marginTop="16dp"
+            android:checked="true"
             android:text="Send Identity Provider token as JWT" />
 
         <EditText
             android:id="@+id/identity_provider_token_textedit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginStart="6dp"
-            android:visibility="gone"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="6dp"
-            android:text="Enter token here" />
+            android:text="Enter token here"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/identity_provider_team_driver_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:checked="false"
+            android:text="Add team driver(s)" />
+
+        <TextView
+            android:id="@+id/team_drivers_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:text="Number of team drivers to send to consumer:"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:layout_marginTop="14dp" />
+
+        <Spinner
+            android:id="@+id/team_drivers_number_spinner"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/send_manage_Action_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:checked="true"
+            android:text="Send manage and login actions" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggle_logout_Action_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:checked="false"
+            android:text="Toggle logout action uri" />
+
+        <TextView
+            android:id="@+id/hos_clocks_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:text="Force HOS Version:"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:layout_marginTop="14dp" />
+
+        <Spinner
+            android:id="@+id/hos_clocks_version_spinner"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggle_delay_hos_response_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:checked="false"
+            android:text="Toggle HOS response delay" />
 
     </LinearLayout>
 
@@ -160,6 +226,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

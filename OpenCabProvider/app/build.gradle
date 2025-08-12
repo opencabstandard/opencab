@@ -3,14 +3,14 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "30.0.0"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.eleostech.opencabprovider"
+        namespace = "com.eleostech.opencabprovider"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode Integer.valueOf(System.env.CIRCLE_BUILD_NUM ?: 1)
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,22 +40,24 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'io.jsonwebtoken:jjwt-gson:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     // Change to main-stylesheet to not use any default styles
+    options.addStringOption("encoding", "UTF-8")
+    options.addStringOption("docencoding", "UTF-8")
     options.addStringOption("-add-stylesheet", "../../website/main.css")
     options.addBooleanOption("-allow-script-in-comments", true)
     options.addStringOption("overview", "../../website/overview.html")
-    options.addStringOption("header", '<a href="/" ><img class="logo" src="https://opencabstandard.org/wp-content/uploads/2021/03/OpenCab_Logo_White.png" height="25"></a>')
+    options.addStringOption("header", '<a href="https://opencabstandard.org" ><img class="logo" src="https://opencabstandard.org/wp-content/uploads/2021/03/OpenCab_Logo_White.png" height="25"></a>')
     options.addStringOption("bottom", '<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-core.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/autoloader/prism-autoloader.min.js"></script></script><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script>');
     options.addStringOption("doctitle", "OpenCab — Android API")
     exclude "com/*"

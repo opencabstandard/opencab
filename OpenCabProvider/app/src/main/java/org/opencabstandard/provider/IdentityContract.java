@@ -1,13 +1,51 @@
 package org.opencabstandard.provider;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * <h2>Identity Contract Provider</h2>
  * Defines the contract for the OpenCab Identity Content provider. An OpenCab Identity provider app should
  * define an Android {@link android.content.ContentProvider} class
  * that follows this contract or should subclass the {@link AbstractIdentityProvider} class and
  * implement the abstract methods.
+ * <h3>Single-sign on for one driver</h3>
+ * <p>
+ * An example sequence where an Identity consumer detects a login and performs single-sign on might be the following:
+ * </p>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant A as Identity Consumer
+ *         participant B as Identity Provider
+ *         Note over B: Driver A logs in
+ *         B-&gt;&gt;A: Broadcast: ACTION_DRIVER_LOGIN
+ *         Note over A: App enumerates available Identity<br>providers and selects one.
+ *         Note over A: App queries provider for list of active drivers.
+ *         A-&gt;&gt;B: Call: METHOD_GET_ACTIVE_DRIVERS, version: "0.2"
+ *         B-&gt;&gt;A: Return: [Driver{username="A"}]
+ *         Note over A: App currently has no logged in user,<br>and notices that it now needs to have<br>user A logged in to match<br>the identity provider state.
+ *         Note over A: The consumer makes a call to the Identity<br>provider and signals that it understands<br>version 0.3 of the contract and that it wants session<br> credentials for all active drivers. This is a<br>separate call from METHOD_GET_ACTIVE_DRIVERS<br>since it may be expensive for a provider to fetch<br>or generate credentials, and it should only be<br>called when needed, not simply to monitor<br>the list of active drivers.
+ *         A-&gt;&gt;B: Call: METHOD_GET_LOGIN_CREDENTIALS, version: "0.3"
+ *         Note over B: The provider app sees the "0.3" version and knows the calling<br>application supports team drivers via OpenCab. <br>If the version is "0.2" or lower, the provider knows the<br>calling application does not support team drivers via OpenCab.
+ *         B-&gt;&gt;A: Return: <br>KEY_VERSION="0.3"<br>KEY_ALL_LOGIN_CREDENTIALS=[<br>  IdentityContract.DriverSession{<br>    username="A",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="kf40m1fpl…d28zckhuf6"<br>    }<br>  }<br>]<br>
+ * </div>
+ * <h3>Single sign-on for a second (team) driver</h3>
+ * <div class="mermaid">
+ *     sequenceDiagram
+ *         participant B as Identity Consumer
+ *         participant A as Identity Provider
+ *         Note over A: Driver B taps the option to log in and enters their<br>credentials for the Identity provider app.
+ *         A-&gt;&gt;B: Broadcast: IdentityContract.ACTION_DRIVER_LOGIN
+ *         Note over B: App queries provider for list of active drivers.
+ *         B-&gt;&gt;A: Call<br>IdentityContract.METHOD_GET_ACTIVE_DRIVERS("0.2")
+ *         A-&gt;&gt;B: Return<br>[Driver{username="A"}, Driver{username="B"}]
+ *         Note over B: App currently has only driver A logged in, so it knows that it<br>now needs to have user B logged in as well to match the <br>identity provider state.
+ *         Note over B: The app makes a call to the Identity provider and signals<br>that it understands version 0.3 of the contract and that it<br>wants session credentials for all active drivers. This is a<br>separate call from METHOD_GET_ACTIVE_DRIVERS<br>since it may be expensive for a provider to fetch or generate<br>credentials, and it should only be called when needed, not<br>simply to monitor the list of active drivers.
+ *         B-&gt;&gt;A: Call<br>IdentityContract.METHOD_GET_LOGIN_CREDENTIALS("0.3")
+ *         A-&gt;&gt;B: Return<br>KEY_VERSION="0.3"<br>KEY_ALL_LOGIN_CREDENTIALS=[<br>  IdentityContract.DriverSession{<br>    username="A",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="kf40m1fpl…d28zckhuf6"<br>    }<br>  },<br>  IdentityContract.DriverSession{<br>    username="B",<br>    loginCredentials=LoginCredentials{<br>      authority="example"<br>      provider="com.eleostech.example"<br>      token="p0LLdm3Ma…KEAd8vMN12d"<br>    }<br>  }<br>]
+ *         Note over B: App adjusts session state to be have driver A and B both logged in.
+ * </div>
  */
 public final class IdentityContract {
 
@@ -18,13 +56,18 @@ public final class IdentityContract {
      * to authentication related information that can be used by an OpenCab Identity consumer app to enable
      * SSO.
      */
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     /**
      * This authority is declared in the manifest for the Identity Content Provider.  It is then used
      * by the consumer app to identify any providers installed on the device.
      */
     public static final String AUTHORITY = "org.opencabstandard.identity";
+
+    /**
+     * This is the name of the receiver class. Application will be looking for classes with this name when it tries to broadcast an event.
+     */
+    public static final String IDENTITY_CHANGED_RECEIVER = "IdentityChangedReceiver";
 
     /**
      * This Action is broadcast when the driver logs out of the OpenCab provider app. Providers MUST publish this
@@ -152,6 +195,20 @@ public final class IdentityContract {
     public static final String KEY_LOGIN_CREDENTIALS = "login_credentials";
 
     /**
+     * Use this key to retrieve the {@link DriverSession} from the {@link android.os.Bundle} object
+     * that is returned from the {@link IdentityContract}.METHOD_GET_LOGIN_CREDENTIALS method call.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *     LoginCredentials credentials = result.getParcelable({@link IdentityContract}.KEY_ALL_LOGIN_CREDENTIALS);
+     * </code>
+     * </pre>
+     */
+    public static final String KEY_ALL_LOGIN_CREDENTIALS = "all_login_credentials";
+
+    /**
      * If an error has occurred in one of the provider method calls, use this key to retrieve
      * the error from the Bundle object returned from the provider call method.
      *
@@ -165,6 +222,25 @@ public final class IdentityContract {
      */
     public static final String KEY_ERROR = "error";
 
+    /**
+     * For the methods {@link IdentityContract}.METHOD_GET_LOGIN_CREDENTIALS and {@link IdentityContract}.METHOD_GET_ACTIVE_DRIVERS,
+     * the returned {@link android.os.Bundle} object will contain this key which maps to String indicating
+     * contract version supported.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *     {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *     {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link HOSContract}.AUTHORITY),
+     *                                  {@link IdentityContract}.METHOD_GET_LOGIN_CREDENTIALS,
+     *                                  {@link IdentityContract}.VERSION,
+     *                                  null);
+     *     String version = result.getBoolean({@link IdentityContract}.KEY_VERSION);
+     * </code>
+     * </pre>
+     */
+    public static final String KEY_VERSION = "key_version";
 
     public IdentityContract() {
 
@@ -189,6 +265,85 @@ public final class IdentityContract {
      *
      * <p>The use of this class is optional, so long as providers and consumers honor the same parceling order for
      * the object's properties.
+     */
+    public static class DriverSession implements Parcelable {
+
+        private String username;
+
+        /**
+         * Retrieve driver user name
+         *
+         * @return username
+         */
+        public String getUsername() {
+            return username;
+        }
+
+        /**
+         * Set user name
+         *
+         * @param username
+         */
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        /**
+         * Retrieve login credentials
+         *
+         * @return
+         */
+        public LoginCredentials getLoginCredentials() {
+            return loginCredentials;
+        }
+
+        /**
+         * Set user credentials
+         *
+         * @param loginCredentials
+         */
+        public void setLoginCredentials(LoginCredentials loginCredentials) {
+            this.loginCredentials = loginCredentials;
+        }
+
+        private LoginCredentials loginCredentials;
+
+        public DriverSession() {
+
+        }
+
+        protected DriverSession(Parcel in) {
+            username = in.readString();
+            loginCredentials = (LoginCredentials) in.readValue(LoginCredentials.class.getClassLoader());
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(username);
+            dest.writeValue(loginCredentials);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<DriverSession> CREATOR = new Creator<DriverSession>() {
+            @Override
+            public DriverSession createFromParcel(Parcel in) {
+                return new DriverSession(in);
+            }
+
+            @Override
+            public DriverSession[] newArray(int size) {
+                return new DriverSession[size];
+            }
+        };
+    }
+
+
+    /**
+     * Object containing the login credentials.
      */
     public static class LoginCredentials implements Parcelable {
 

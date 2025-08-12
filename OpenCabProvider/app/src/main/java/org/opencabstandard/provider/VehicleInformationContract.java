@@ -12,23 +12,23 @@ import android.os.Parcelable;
  * implement the abstract methods.
  * <div class="mermaid">
  *     sequenceDiagram
- participant A as OpenCab Consumer
- participant B as OpenCab Provider
- Note over A,B: consumer app launches, no driver logged in
- A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
- B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
- Note over A,B: driver logs in or connects to a vehicle mount
- B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
- A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
- B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: false}}
- Note over A,B: driver switches to D status or puts vehicle in gear
- B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
- A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
- B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: true}}
- Note over A,B: driver logs out or detaches tablet
- B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
- A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
- B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
+ * participant A as OpenCab Consumer
+ * participant B as OpenCab Provider
+ * Note over A,B: consumer app launches, no driver logged in
+ * A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+ * B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
+ * Note over A,B: driver logs in or connects to a vehicle mount
+ * B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+ * A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+ * B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: false}}
+ * Note over A,B: driver switches to D status or puts vehicle in gear
+ * B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+ * A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+ * B-&gt;&gt;A: {VEHICLE_INFORMATION: {VIN: "JH4NA1150RT000268", inGear: true}}
+ * Note over A,B: driver logs out or detaches tablet
+ * B-&gt;&gt;A: ACTION_VEHICLE_INFORMATION_CHANGED
+ * A-&gt;&gt;+B: provider.call(METHOD_GET_VEHICLE_INFORMATION, version: 1)
+ * B-&gt;&gt;A: {VEHICLE_INFORMATION: null}
  * </div>
  */
 public final class VehicleInformationContract {
@@ -40,7 +40,7 @@ public final class VehicleInformationContract {
      * to details about the vehicle, if any, associated with the mobile device running the app or associated
      * with the driver who is logged into the mobile app.
      */
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     /**
      * This authority is declared in the manifest for the app that acts as the vehicle information provider.
@@ -48,6 +48,11 @@ public final class VehicleInformationContract {
      */
     // TODO: can we use dashes in java package names? No dashes but we can use underscores
     public static final String AUTHORITY = "org.opencabstandard.vehicleinformation";
+
+    /**
+     * This is the name of the receiver class. Application will be looking for classes with this name when it tries to broadcast an event.
+     */
+    public static final String VEHICLE_INFORMATION_CHANGED_RECEIVER = "VehicleInformationChangedReceiver";
 
     /**
      * This Action is broadcast when the vehicle information changes, perhaps because the driver
@@ -72,8 +77,6 @@ public final class VehicleInformationContract {
      *     {@link VehicleInformationContract}.VehicleInformation info = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VEHICLE_INFORMATION);
      * </code>
      * </pre>
-     *
-     *
      */
     public static final String METHOD_GET_VEHICLE_INFORMATION = "getVehicleInformation";
 
@@ -96,7 +99,6 @@ public final class VehicleInformationContract {
      *     {@link VehicleInformationContract}.VehicleInformation info = result.getParcelableArrayList({@link VehicleInformationContract}.KEY_VEHICLE_INFORMATION);
      * </code>
      * </pre>
-     *
      */
     public static final String KEY_VEHICLE_INFORMATION = "vehicle_info";
 
@@ -118,6 +120,25 @@ public final class VehicleInformationContract {
      */
     public static final String KEY_ERROR = "error";
 
+    /**
+     * For the methods {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION and {@link VehicleInformationContract}.METHOD_GET_VEHICLE_INFORMATION,
+     * the returned {@link Bundle} object will contain this key which maps to String indicating
+     * contract version supported.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code class="language-java">
+     *     {@link android.content.ContentResolver} resolver = getApplicationContext().getContentResolver();
+     *     {@link Bundle} result = resolver.call(Uri.parse("content://" + {@link HOSContract}.AUTHORITY),
+     *                                  {@link VehicleInformationContract}.METHOD_GET_LOGIN_CREDENTIALS,
+     *                                  {@link IdentityContract}.VERSION,
+     *                                  null);
+     *     String version = result.getBoolean({@link IdentityContract}.METHOD_GET_VEHICLE_INFORMATION);
+     * </code>
+     * </pre>
+     */
+    public static final String KEY_VERSION = "key_version";
 
     public VehicleInformationContract() {
 
@@ -176,6 +197,7 @@ public final class VehicleInformationContract {
          * Is the vehicle currently in gear?
          * True = vehicle is in gear
          * False = vehicle is in park or neutral
+         *
          * @return Boolean indicating whether the vehicle is currently in gear.
          */
         public boolean isInGear() {
@@ -185,6 +207,7 @@ public final class VehicleInformationContract {
         /**
          * Indicate whether the vehicle is in gear.  If false, the vehicle is not
          * and does not intend on moving.
+         *
          * @param status Boolean indicating if the vehicle is currently in gear.
          */
         public void setInGear(boolean status) {
@@ -194,7 +217,7 @@ public final class VehicleInformationContract {
         protected VehicleInformation(Parcel in) {
             this.vin = in.readString();
             this.vehicleId = in.readString();
-            this.inGear = (Boolean)in.readValue(Boolean.class.getClassLoader());
+            this.inGear = (Boolean) in.readValue(Boolean.class.getClassLoader());
         }
 
         @Override
