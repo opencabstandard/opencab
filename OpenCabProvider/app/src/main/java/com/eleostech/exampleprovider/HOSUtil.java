@@ -329,6 +329,9 @@ public class HOSUtil {
     private static Date addHoursToDate(Date date, int hours) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+        // Lock the seconds and milliseconds to zero to prevent drift
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         int minutes = calendar.get(Calendar.MINUTE);
         calendar.add(Calendar.MINUTE, 60 - minutes);
         calendar.add(Calendar.HOUR_OF_DAY, hours);
